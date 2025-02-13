@@ -22,10 +22,10 @@ public:
 	 * @brief Добавляет компонент к сущности.
 	 * @brief В параметрах указываются параметры для конструктора компонента.
 	 */
-	template <typename T, typename... Args>
-	entity& add(Args&&... args)
+	template <typename _TComponent, typename... _TArgs>
+	entity& add(_TArgs&&... args)
 	{
-		m_components[typeid(T)] = std::make_shared<T>(std::forward<Args>(args)...);
+		m_components[typeid(_TComponent)] = std::make_shared<_TComponent>(std::forward<_TArgs>(args)...);
 		return *this;
 	}
 
@@ -33,12 +33,12 @@ public:
 	 * @brief Возвращает указатель на указанный компонент у сущности.
 	 * @brief Если не удалось найти компонент, то вернётся нулевой указатель.
 	 */
-	template <typename T>
-	T* get()
+	template <typename _TComponent>
+	_TComponent* get()
 	{
-		auto it = m_components.find(typeid(T));
+		auto it = m_components.find(typeid(_TComponent));
 		return (it != m_components.end())
-			? static_cast<T*>(it->second.get())
+			? static_cast<_TComponent*>(it->second.get())
 			: nullptr;
 	}
 
@@ -54,10 +54,10 @@ public:
 			: nullptr;
 	}
 
-	template <typename T>
+	template <typename _TComponent>
 	void remove()
 	{
-		auto it = m_components.find(typeid(T));
+		auto it = m_components.find(typeid(_TComponent));
 		if (it != m_components.end())
 		{
 			m_components.erase(it);
@@ -68,10 +68,10 @@ public:
 	 * @brief Возвращает указатель на указанный компонент у сущности.
 	 * @brief Если не удалось найти компонент, то вернётся нулевой указатель.
 	 */
-	template <typename T>
+	template <typename _TComponent>
 	bool has() const
 	{
-		return m_components.find(typeid(T)) != m_components.end();
+		return m_components.find(typeid(_TComponent)) != m_components.end();
 	}
 
 	/**

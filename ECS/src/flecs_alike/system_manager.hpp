@@ -1,9 +1,7 @@
 #pragma once
 
 #include <functional>
-#include <memory>
 #include <string>
-#include <type_traits>
 #include <vector>
 
 #include "context.hpp"
@@ -188,6 +186,11 @@ public:
 	 * @brief Возвращает шину событий
 	 */
 	ecs::event_bus& event_bus() { return m_event_bus; }
+
+	/**
+	 * @brief Возвращает контекст
+	 */
+	ecs::context& get_context() { return m_context; }
 
 	/**
 	 * @brief Вызывает функцию-обработчик для каждой системы
