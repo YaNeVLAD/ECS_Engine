@@ -18,7 +18,7 @@ public:
 	using pointer = _TVal**;
 	using reference = _TVal&;
 
-	iterator(const std::vector<_TVal*>& values, size_t index = 0)
+	iterator(const std::vector<_TVal*>& values = {}, size_t index = 0)
 		: m_values(values)
 		, m_index(index)
 	{
