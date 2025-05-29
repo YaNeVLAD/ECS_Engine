@@ -54,8 +54,16 @@ struct Window
 {
 	sf::RenderWindow& window;
 };
+struct Collider
+{
+	Collider(sf::Vector2f pos, float size = 50.f)
+		: rect(pos, { size, size })
+	{
+	}
 
-// systems
+	sf::FloatRect rect;
+};
+// Stateless systems
 void Draw(ecs::context& ctx, Window& w)
 {
 	for (auto& entity : ctx.entity().at_scope<render>().all())
@@ -70,10 +78,13 @@ void Draw(ecs::context& ctx, Window& w)
 	}
 }
 
-void Move(ecs::context& ctx, Position& p, Velocity& v)
+void Move(ecs::context& ctx, Position& p, Velocity& v, Collider& c)
 {
 	p.x += v.vx * ctx.delta_time;
 	p.y += v.vy * ctx.delta_time;
+
+	c.rect.left = p.x;
+	c.rect.top = p.y;
 }
 
 void HandleInput(Input& input, Velocity& v)
@@ -99,6 +110,27 @@ void MoveCamera(Camera& c, Position& p)
 	c.window.setView(camera);
 }
 
+void Collision(ecs::context& ctx, Collider& c, Position& p)
+{
+	auto [begin, end] = ctx.entity().all_entities();
+	for (auto& it = begin; it < end; ++it)
+	{
+		if (auto collider = it->get<Collider>())
+		{
+			if (it->ID() == ctx.entity_id)
+				continue;
+
+			if (c.rect.intersects(collider->rect))
+			{
+				if (auto renderable = it->get<Renderable>())
+				{
+					renderable->rect.setFillColor(sf::Color::Cyan);
+				}
+			}
+		}
+	}
+}
+// System with state
 class A
 {
 public:
@@ -120,7 +152,7 @@ private:
 class ExampleGame
 {
 public:
-	void Start()
+	void StartAndRun()
 	{
 		ecs::entity_manager em;
 		ecs::system_manager sm(em);
@@ -132,12 +164,14 @@ public:
 		sf::Event event{};
 		sf::Clock clock;
 
+		auto pos = static_cast<sf::Vector2f>(window.getSize() / 2u);
 		auto& playerEntity = em.at_scope<render>()
 								 .create()
 								 .add<Velocity>(0.f, 0.f)
-								 .add<Position>(static_cast<sf::Vector2f>(window.getSize() / 2u))
+								 .add<Position>(pos)
 								 .add<Renderable>(sf::Color::Green)
 								 .add<Camera>(camera, window)
+								 .add<Collider>(pos)
 								 .add<Input>();
 
 		// create entity in default scope
@@ -147,18 +181,22 @@ public:
 		em.at_scope<render>()
 			.create()
 			.add<Position>(100.f, 100.f)
+			.add<Collider>(sf::Vector2f{ 100.f, 100.f })
 			.add<Renderable>(sf::Color::Red);
 
 		sm.system<Window>("Draw")
 			.each(Draw, true);
 
-		sm.system<Position>("DoWithContext")
-			.each(&A::DoWithContext, a, true);
+		sm.system<Collider, Position>("Collision")
+			.each(Collision, true);
 
-		sm.system<Position>("DoWithoutContext")
-			.each(&A::DoWithoutContext, a);
+		// sm.system<Position>("DoWithContext")
+		//	.each(&A::DoWithContext, a, true);
 
-		sm.system<Position, Velocity>("Move")
+		// sm.system<Position>("DoWithoutContext")
+		//	.each(&A::DoWithoutContext, a);
+
+		sm.system<Position, Velocity, Collider>("Move")
 			.each(Move, true);
 
 		sm.system<Input, Velocity>("HandleInput")
@@ -201,6 +239,7 @@ public:
 			window.clear();
 			looper.frame(dt);
 			window.display();
+			window.setTitle("FPS " + std::to_string(int(1 / dt)));
 		}
 	}
 };

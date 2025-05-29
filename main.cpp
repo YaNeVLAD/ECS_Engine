@@ -6,7 +6,7 @@
 int main()
 {
 	ExampleGame example;
-	example.Start();
+	example.StartAndRun();
 
 	return EXIT_SUCCESS;
 }
