@@ -1,7 +1,7 @@
 #pragma once
 
-#include "./src/flecs_alike/system_manager.hpp"
-#include "./src/flecs_alike/entity_manager.hpp"
-#include "./src/flecs_alike/event_bus.hpp"
-#include "./src/flecs_alike/context.hpp"
-#include "./src/flecs_alike/looper.hpp"
+#include "./src/context.hpp"
+#include "./src/entity_manager.hpp"
+#include "./src/event_bus.hpp"
+#include "./src/looper.hpp"
+#include "./src/system_manager.hpp"
