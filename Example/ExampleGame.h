@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../ECS/ecs.hpp"
+#include "../Engine/src/ECS/legacy/ecs.hpp"
 #include "SFML/Graphics.hpp"
 #include <iostream>
 

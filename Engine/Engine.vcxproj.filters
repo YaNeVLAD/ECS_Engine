@@ -13,24 +13,5 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Файлы заголовков\example">
-      <UniqueIdentifier>{e50208e3-4f4d-4729-84a7-acfb6af7b50c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Файлы заголовков\flecs">
-      <UniqueIdentifier>{9f594e89-7ab7-4751-9b99-025e87b3429e}</UniqueIdentifier>
-    </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Example\ExampleGame.h">
-      <Filter>Файлы заголовков\example</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="CMakeLists.txt" />
   </ItemGroup>
 </Project>

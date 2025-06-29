@@ -132,7 +132,7 @@ public:
 	 * @see ecs::system_manager::system()
 	 */
 	template <typename _TFn>
-	system_storage& each(_TFn&& __fn, bool context_needed)
+	system_storage& each(_TFn&& __fn, bool)
 	{
 		return set_each_callback([callback = std::forward<_TFn>(__fn)](context& ctx, std::vector<void*>& components) {
 			if constexpr (sizeof...(_TComponents) > 0)
