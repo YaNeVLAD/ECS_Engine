@@ -18,6 +18,30 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\ECS\EntityManager\EntityManager.h" />
+    <ClInclude Include="src\ECS\ComponentManager\ComponentManager.h" />
+    <ClInclude Include="src\ECS\ComponentArray\ComponentArray.h" />
+    <ClInclude Include="src\ECS\ComponentArray\IComponentArray.h" />
+    <ClInclude Include="src\ECS\Entity\Entity.h" />
+    <ClInclude Include="src\ECS\Entity\Signature.h" />
+    <ClInclude Include="src\ECS\legacy\ecs.hpp" />
+    <ClInclude Include="src\ECS\legacy\src\context.hpp" />
+    <ClInclude Include="src\ECS\legacy\src\entity.hpp" />
+    <ClInclude Include="src\ECS\legacy\src\entity_manager.hpp" />
+    <ClInclude Include="src\ECS\legacy\src\event_bus.hpp" />
+    <ClInclude Include="src\ECS\legacy\src\iterator.hpp" />
+    <ClInclude Include="src\ECS\legacy\src\looper.hpp" />
+    <ClInclude Include="src\ECS\legacy\src\system.hpp" />
+    <ClInclude Include="src\ECS\legacy\src\system_manager.hpp" />
+    <ClInclude Include="src\ECS\TypeId\TypeId.h" />
+    <ClInclude Include="src\ECS\System\System.h" />
+    <ClInclude Include="src\ECS\SystemManager\SystemManager.h" />
+    <ClInclude Include="src\ECS\World\World.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\ECS\EntityManager\EntityManager.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -72,7 +96,7 @@
   <PropertyGroup Label="UserMacros" />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
@@ -86,7 +110,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
@@ -102,7 +126,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
@@ -116,7 +140,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>

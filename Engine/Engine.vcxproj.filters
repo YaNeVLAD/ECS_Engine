@@ -13,5 +13,75 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Файлы заголовков\legacy">
+      <UniqueIdentifier>{e72c2b48-4074-4153-91aa-aa5ecbe48f39}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\ecs">
+      <UniqueIdentifier>{1705b3b1-4911-4501-80cd-944bb9d6e95f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\ECS\legacy\src\system_manager.hpp">
+      <Filter>Файлы заголовков\legacy</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ECS\legacy\src\context.hpp">
+      <Filter>Файлы заголовков\legacy</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ECS\legacy\ecs.hpp">
+      <Filter>Файлы заголовков\legacy</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ECS\legacy\src\entity.hpp">
+      <Filter>Файлы заголовков\legacy</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ECS\legacy\src\entity_manager.hpp">
+      <Filter>Файлы заголовков\legacy</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ECS\legacy\src\event_bus.hpp">
+      <Filter>Файлы заголовков\legacy</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ECS\legacy\src\iterator.hpp">
+      <Filter>Файлы заголовков\legacy</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ECS\legacy\src\looper.hpp">
+      <Filter>Файлы заголовков\legacy</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ECS\legacy\src\system.hpp">
+      <Filter>Файлы заголовков\legacy</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ECS\ComponentArray\ComponentArray.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ECS\Entity\Entity.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ECS\ComponentArray\IComponentArray.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ECS\ComponentManager\ComponentManager.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ECS\TypeId\TypeId.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ECS\EntityManager\EntityManager.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ECS\Entity\Signature.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ECS\System\System.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ECS\SystemManager\SystemManager.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ECS\World\World.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\ECS\EntityManager\EntityManager.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

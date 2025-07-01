@@ -16,13 +16,13 @@
     <Filter Include="Файлы заголовков\example">
       <UniqueIdentifier>{e50208e3-4f4d-4729-84a7-acfb6af7b50c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Файлы заголовков\flecs">
-      <UniqueIdentifier>{9f594e89-7ab7-4751-9b99-025e87b3429e}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Example\ExampleGame.h">
       <Filter>Файлы заголовков\example</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.h">
+      <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
