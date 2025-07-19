@@ -9,14 +9,14 @@
 namespace ecs
 {
 
-class ViewManager
+class ViewManager final
 {
 public:
 	template <typename... _TComponents>
 	std::shared_ptr<View<_TComponents...>>
 	CreateView(ComponentManager& componentManager, EntityManager const& entityManager)
 	{
-		Signature signature = CreateSignature();
+		Signature signature = CreateSignature<_TComponents...>();
 
 		if (m_views.contains(signature))
 		{
@@ -55,17 +55,11 @@ public:
 
 private:
 	template <typename... _TComponents>
-	Signature CreateSignature(_TComponents&&... components)
+	Signature CreateSignature()
 	{
 		Signature signature;
 		(signature.set(TypeIdOf<_TComponents>()), ...);
 		return signature;
-	}
-
-	template <typename _TComponent>
-	void _set_bit_for_component(ComponentManager& componentManager, Signature& signature)
-	{
-		signature.set(TypeIdOf<_TComponent>());
 	}
 
 	std::unordered_map<Signature, std::shared_ptr<IView>> m_views;

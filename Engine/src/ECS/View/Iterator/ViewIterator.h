@@ -9,7 +9,7 @@ namespace ecs
 {
 
 template <typename... _TComponents>
-class ViewIterator
+class ViewIterator final
 {
 	using EntityIterator = typename std::vector<Entity>::iterator;
 

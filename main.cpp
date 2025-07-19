@@ -8,7 +8,9 @@
 
 #include <SFML/Graphics.hpp>
 
-#define BENCHMARK_ON 1
+#include "Example/NewExample.h"
+
+#define BENCHMARK_ON 0
 
 #if BENCHMARK_ON
 struct Transform
@@ -103,24 +105,56 @@ public:
 		g_system_timings[typeid(*this).name()] += std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
 	}
 };
-#endif
+
+struct DrawData
+{
+	float x, y;
+};
+
+class RenderDataSystem : public ecs::System
+{
+public:
+	void Update(ecs::World& world, float dt) override
+	{
+		m_drawData.clear();
+		m_drawData.reserve(Entities.size());
+
+		for (const auto& entity : Entities)
+		{
+			auto const& transform = world.GetComponent<Transform>(entity);
+			m_drawData.emplace_back(transform.x, transform.y);
+		}
+	}
+
+	const std::vector<DrawData>& GetDrawData() const
+	{
+		return m_drawData;
+	}
+
+private:
+	std::vector<DrawData> m_drawData;
+};
 
 class Renderer
 {
 public:
-	void Draw(sf::RenderWindow& window, ecs::View<Transform, Renderable>& view)
+	void Draw(sf::RenderWindow& window, RenderDataSystem& renderDataSystem)
 	{
 		window.clear(sf::Color::Black);
 
-		for (auto [entity, transform, renderable] : view.Each())
+		sf::RectangleShape rect({ 50.f, 50.f });
+		rect.setFillColor(sf::Color::Red);
+
+		for (const auto& data : renderDataSystem.GetDrawData())
 		{
-			renderable.rect.setPosition(transform.x, transform.y);
-			window.draw(renderable.rect);
+			rect.setPosition(data.x, data.y);
+			window.draw(rect);
 		}
 
 		window.display();
 	}
 };
+#endif
 
 int main()
 {
@@ -154,6 +188,10 @@ int main()
 		world.RegisterSystem<DamageSystem>()
 			.WithRead<Damage>()
 			.WithWrite<Health>();
+
+		world.RegisterSystem<RenderDataSystem>()
+			.WithRead<Transform>()
+			.WithRead<Renderable>();
 
 		world.BuildSystemGraph();
 	}
@@ -205,7 +243,7 @@ int main()
 
 		world.ConfirmChanges();
 
-		renderer.Draw(window, *renderView);
+		renderer.Draw(window, world.GetSystem<RenderDataSystem>());
 
 		frameCount++;
 		benchmarkFrames++;
@@ -247,6 +285,9 @@ int main()
 		std::cout << "   Contribution: " << percentage << "%\n";
 	}
 #endif
+
+	Game game;
+	game.Run();
 
 	return 0;
 }
