@@ -37,10 +37,15 @@
     <ClInclude Include="src\ECS\TypeId\TypeId.h" />
     <ClInclude Include="src\ECS\System\System.h" />
     <ClInclude Include="src\ECS\SystemManager\SystemManager.h" />
+    <ClInclude Include="src\ECS\View\IView.h" />
     <ClInclude Include="src\ECS\World\World.h" />
+    <ClInclude Include="src\ECS\View\Iterator\ViewIterator.h" />
+    <ClInclude Include="src\ECS\View\View.h" />
+    <ClInclude Include="src\ECS\ViewManager\ViewManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\ECS\EntityManager\EntityManager.cpp" />
+    <ClCompile Include="src\ECS\ViewManager\ViewManager.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

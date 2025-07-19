@@ -8,6 +8,7 @@
 #include "../Entity/Signature.h"
 #include "../EntityManager/EntityManager.h"
 #include "../SystemManager/SystemManager.h"
+#include "../ViewManager/ViewManager.h"
 
 namespace ecs
 {
@@ -19,6 +20,7 @@ public:
 		: m_componentManager(std::make_unique<ComponentManager>())
 		, m_entityManager(std::make_unique<EntityManager>())
 		, m_systemManager(std::make_unique<SystemManager>())
+		, m_viewManager(std::make_unique<ViewManager>())
 	{
 	}
 
@@ -48,6 +50,7 @@ public:
 		m_entityManager->SetSignature(entity, signature);
 
 		m_systemManager->OnEntitySignatureChanged(entity, signature);
+		m_viewManager->OnEntitySignatureChanged(entity, signature);
 	}
 
 	template <typename _TComponent>
@@ -91,7 +94,7 @@ public:
 		m_systemManager->BuildExecutionGraph();
 	}
 
-	void Update(float dt)
+	void TakeStep(float dt)
 	{
 		m_systemManager->Execute(*this, dt);
 	}
@@ -108,15 +111,23 @@ public:
 			m_entityManager->DestroyEntity(entity);
 			m_componentManager->OnEntityDestroyed(entity);
 			m_systemManager->OnEntitySignatureChanged(entity, {});
+			m_viewManager->OnEntityDestroyed(entity);
 		}
 
 		m_entitiesToDestroy.clear();
+	}
+
+	template <typename... _TComponents>
+	auto CreateView()
+	{
+		return m_viewManager->CreateView<_TComponents...>(*m_componentManager, *m_entityManager);
 	}
 
 private:
 	std::unique_ptr<ComponentManager> m_componentManager;
 	std::unique_ptr<EntityManager> m_entityManager;
 	std::unique_ptr<SystemManager> m_systemManager;
+	std::unique_ptr<ViewManager> m_viewManager;
 
 	std::vector<Entity> m_entitiesToDestroy;
 };

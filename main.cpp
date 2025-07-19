@@ -103,30 +103,17 @@ public:
 		g_system_timings[typeid(*this).name()] += std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
 	}
 };
-
-class RenderDataSystem : public ecs::System
-{
-public:
-	void Update(ecs::World& world, float dt) override
-	{
-	}
-};
 #endif
 
 class Renderer
 {
 public:
-	void Draw(sf::RenderWindow& window, ecs::World& world)
+	void Draw(sf::RenderWindow& window, ecs::View<Transform, Renderable>& view)
 	{
-		auto& renderDataSystem = world.GetSystem<RenderDataSystem>();
-
 		window.clear(sf::Color::Black);
 
-		for (const auto& entity : renderDataSystem.Entities)
+		for (auto [entity, transform, renderable] : view.Each())
 		{
-			auto const& transform = world.GetComponent<Transform>(entity);
-			auto& renderable = world.GetComponent<Renderable>(entity);
-
 			renderable.rect.setPosition(transform.x, transform.y);
 			window.draw(renderable.rect);
 		}
@@ -168,10 +155,6 @@ int main()
 			.WithRead<Damage>()
 			.WithWrite<Health>();
 
-		world.RegisterSystem<RenderDataSystem>()
-			.WithRead<Transform>()
-			.WithRead<Renderable>();
-
 		world.BuildSystemGraph();
 	}
 
@@ -206,6 +189,8 @@ int main()
 	sf::Clock clock;
 	auto lastFPSTime = std::chrono::high_resolution_clock::now();
 
+	auto renderView = world.CreateView<Transform, Renderable>();
+
 	while (window.isOpen() && std::chrono::high_resolution_clock::now() < loopEnd)
 	{
 		while (window.pollEvent(event))
@@ -216,11 +201,11 @@ int main()
 
 		auto dt = clock.restart().asSeconds();
 
-		world.Update(dt);
+		world.TakeStep(dt);
 
 		world.ConfirmChanges();
 
-		// renderer.Draw(window, world);
+		renderer.Draw(window, *renderView);
 
 		frameCount++;
 		benchmarkFrames++;

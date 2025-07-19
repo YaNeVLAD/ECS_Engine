@@ -9,7 +9,6 @@
 
 namespace ecs
 {
-
 using ComponentType = TypeId;
 
 class ComponentManager final
