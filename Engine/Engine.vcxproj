@@ -43,10 +43,6 @@
     <ClInclude Include="src\ECS\View\View.h" />
     <ClInclude Include="src\ECS\ViewManager\ViewManager.h" />
   </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="src\ECS\EntityManager\EntityManager.cpp" />
-    <ClCompile Include="src\ECS\ViewManager\ViewManager.cpp" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
