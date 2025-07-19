@@ -81,6 +81,8 @@ class DamageSystem : public ecs::System
 public:
 	void Update(ecs::World& world, float dt) override
 	{
+		auto type = typeid(DamageSystem).name();
+
 		auto start = std::chrono::high_resolution_clock::now();
 
 		for (const auto& entity : Entities)
@@ -137,7 +139,7 @@ int main()
 {
 #if BENCHMARK_ON
 	const int ENTITY_COUNT = 100'00;
-	const int BENCHMARK_SECONDS = 30;
+	const int BENCHMARK_SECONDS = 10;
 	const float FIXED_DT = 1.0f / 60.0f;
 
 	std::cout << "--- ECS Benchmark ---" << std::endl;
@@ -193,17 +195,18 @@ int main()
 
 	std::cout << "\n--- Running Benchmark for " << BENCHMARK_SECONDS << " seconds... ---" << std::endl;
 
-	int frameCount = 0;
+	size_t benchmarkFrames = 0;
+	size_t frameCount = 0;
 	auto benchmarkStart = std::chrono::high_resolution_clock::now();
 	auto loopEnd = benchmarkStart + std::chrono::seconds(BENCHMARK_SECONDS);
 
 	sf::Event event;
 	sf::RenderWindow window(sf::VideoMode::getDesktopMode(), "ECS Benchmark");
 	Renderer renderer;
+	sf::Clock clock;
+	auto lastFPSTime = std::chrono::high_resolution_clock::now();
 
-	// TODO Investigate about crash reason in std::barrier with Renderer
-	while (window.isOpen() || std::chrono::high_resolution_clock::now() < loopEnd)
-	// while (window.isOpen())
+	while (window.isOpen() && std::chrono::high_resolution_clock::now() < loopEnd)
 	{
 		while (window.pollEvent(event))
 		{
@@ -211,21 +214,36 @@ int main()
 				window.close();
 		}
 
-		world.Update(FIXED_DT);
+		auto dt = clock.restart().asSeconds();
 
-		renderer.Draw(window, world);
+		world.Update(dt);
+
+		world.ConfirmChanges();
+
+		// renderer.Draw(window, world);
 
 		frameCount++;
-	}
+		benchmarkFrames++;
 
+		auto currentTime = std::chrono::high_resolution_clock::now();
+		std::chrono::duration<float> elapsed = currentTime - lastFPSTime;
+
+		if (elapsed.count() >= 1.0f)
+		{
+			float fps = static_cast<float>(frameCount) / elapsed.count();
+			std::cout << "FPS: " << fps << std::endl;
+			frameCount = 0;
+			lastFPSTime = currentTime;
+		}
+	}
 	auto benchmarkEnd = std::chrono::high_resolution_clock::now();
 	auto totalDuration_ms = std::chrono::duration_cast<std::chrono::milliseconds>(benchmarkEnd - benchmarkStart).count();
 
 	std::cout << "\n--- Benchmark Results ---" << std::endl;
 	std::cout << "Total time: " << totalDuration_ms / 1000.0 << "s" << std::endl;
-	std::cout << "Total frames: " << frameCount << std::endl;
-	std::cout << "Average FPS: " << static_cast<double>(frameCount) / (totalDuration_ms / 1000.0) << std::endl;
-	std::cout << "Average frame time: " << static_cast<double>(totalDuration_ms) / frameCount << " ms" << std::endl;
+	std::cout << "Total frames: " << benchmarkFrames << std::endl;
+	std::cout << "Average FPS: " << static_cast<double>(benchmarkFrames) / (totalDuration_ms / 1000.0) << std::endl;
+	std::cout << "Average frame time: " << static_cast<double>(totalDuration_ms) / benchmarkFrames << " ms" << std::endl;
 	std::cout << "_____________________" << std::endl;
 	std::cout << "System Performance:" << std::endl;
 

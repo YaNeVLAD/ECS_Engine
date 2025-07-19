@@ -1,9 +1,7 @@
 #pragma once
 
-#include <barrier>
 #include <memory>
 #include <queue>
-#include <ranges>
 #include <thread>
 #include <unordered_map>
 #include <vector>
@@ -155,16 +153,15 @@ public:
 	{
 		for (auto const& stage : m_executionStages)
 		{
-			std::barrier syncPoint(stage.size() + 1);
+			std::vector<std::jthread> worker_threads;
+			worker_threads.reserve(stage.size());
 
 			for (SystemId id : stage)
 			{
-				std::jthread([this, id, &world, dt, &syncPoint]() {
+				worker_threads.emplace_back([this, id, &world, dt]() {
 					m_systems.at(id)->Update(world, dt);
-					syncPoint.arrive_and_wait();
-				}).detach();
+				});
 			}
-			syncPoint.arrive_and_wait();
 		}
 	}
 

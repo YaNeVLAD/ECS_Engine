@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 
 #include "../ComponentManager/ComponentManager.h"
 #include "../Entity/Entity.h"
@@ -28,9 +29,7 @@ public:
 
 	void DestoryEntity(Entity entity)
 	{
-		m_entityManager->DestroyEntity(entity);
-		m_componentManager->OnEntityDestroyed(entity);
-		m_systemManager->OnEntitySignatureChanged(entity, {});
+		m_entitiesToDestroy.push_back(entity);
 	}
 
 	template <typename _TComponent>
@@ -102,10 +101,24 @@ public:
 		return *m_componentManager;
 	}
 
+	void ConfirmChanges()
+	{
+		for (Entity const& entity : m_entitiesToDestroy)
+		{
+			m_entityManager->DestroyEntity(entity);
+			m_componentManager->OnEntityDestroyed(entity);
+			m_systemManager->OnEntitySignatureChanged(entity, {});
+		}
+
+		m_entitiesToDestroy.clear();
+	}
+
 private:
 	std::unique_ptr<ComponentManager> m_componentManager;
 	std::unique_ptr<EntityManager> m_entityManager;
 	std::unique_ptr<SystemManager> m_systemManager;
+
+	std::vector<Entity> m_entitiesToDestroy;
 };
 
 } // namespace ecs

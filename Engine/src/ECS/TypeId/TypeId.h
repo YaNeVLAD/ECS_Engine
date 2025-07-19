@@ -31,4 +31,10 @@ TypeId TypeIdOf()
 	return details::TypeIDGenerator::Get<_T>();
 }
 
+template <typename _T>
+const char* NameOf()
+{
+	return typeid(_T).name();
+}
+
 } // namespace ecs
