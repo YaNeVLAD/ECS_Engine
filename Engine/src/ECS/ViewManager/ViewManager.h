@@ -8,6 +8,7 @@
 
 namespace ecs
 {
+
 class ViewManager
 {
 public:
@@ -69,4 +70,5 @@ private:
 
 	std::unordered_map<Signature, std::shared_ptr<IView>> m_views;
 };
+
 } // namespace ecs

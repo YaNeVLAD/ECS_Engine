@@ -5,6 +5,7 @@
 
 namespace ecs
 {
+
 class IView
 {
 public:
@@ -12,4 +13,5 @@ public:
 	virtual void OnEntitySignatureChanged(Entity entity, Signature signature) = 0;
 	virtual void OnEntityDestroyed(Entity entity) = 0;
 };
+
 } // namespace ecs

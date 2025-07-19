@@ -7,6 +7,7 @@
 
 namespace ecs
 {
+
 template <typename... _TComponents>
 class ViewIterator
 {
@@ -40,4 +41,5 @@ private:
 	ComponentManager& m_manager;
 	EntityIterator m_it;
 };
+
 } // namespace ecs

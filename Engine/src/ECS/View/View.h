@@ -9,6 +9,7 @@
 
 namespace ecs
 {
+
 template <typename... _TComponents>
 class View final : public IView
 {
@@ -71,4 +72,5 @@ private:
 	Signature m_signature;
 	std::vector<Entity> m_entities;
 };
+
 } // namespace ecs
