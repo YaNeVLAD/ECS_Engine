@@ -38,7 +38,7 @@
     <ClInclude Include="src\ECS\System\System.h" />
     <ClInclude Include="src\ECS\SystemManager\SystemManager.h" />
     <ClInclude Include="src\ECS\View\IView.h" />
-    <ClInclude Include="src\ECS\World\World.h" />
+    <ClInclude Include="src\ECS\Scene\Scene.h" />
     <ClInclude Include="src\ECS\View\Iterator\ViewIterator.h" />
     <ClInclude Include="src\ECS\View\View.h" />
     <ClInclude Include="src\ECS\ViewManager\ViewManager.h" />

@@ -6,7 +6,7 @@
 
 namespace ecs
 {
-class World;
+class Scene;
 
 class System
 {
@@ -14,7 +14,7 @@ class System
 public:
 	virtual ~System() = default;
 
-	virtual void Update(World&, float dt) = 0;
+	virtual void Update(Scene& scene, float dt) = 0;
 
 	std::vector<Entity> Entities;
 };

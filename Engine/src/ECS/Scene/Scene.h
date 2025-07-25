@@ -13,10 +13,10 @@
 namespace ecs
 {
 
-class World
+class Scene
 {
 public:
-	World()
+	Scene()
 		: m_componentManager(std::make_unique<ComponentManager>())
 		, m_entityManager(std::make_unique<EntityManager>())
 		, m_systemManager(std::make_unique<SystemManager>())

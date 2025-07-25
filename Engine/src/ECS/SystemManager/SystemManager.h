@@ -149,7 +149,7 @@ public:
 		}
 	}
 
-	void Execute(World& world, float dt)
+	void Execute(Scene& scene, float dt)
 	{
 		for (auto const& stage : m_executionStages)
 		{
@@ -158,8 +158,8 @@ public:
 
 			for (SystemId id : stage)
 			{
-				worker_threads.emplace_back([this, id, &world, dt]() {
-					m_systems.at(id)->Update(world, dt);
+				worker_threads.emplace_back([this, id, &scene, dt]() {
+					m_systems.at(id)->Update(scene, dt);
 				});
 			}
 		}

@@ -4,7 +4,7 @@
 
 #include "Timer.h"
 
-#include "Engine/src/ECS/World/World.h"
+#include "Engine/src/ECS/Scene/Scene.h"
 
 #include <SFML/Graphics.hpp>
 
@@ -58,7 +58,7 @@ std::unordered_map<const char*, long long> g_system_timings;
 class PhysicsSystem : public ecs::System
 {
 public:
-	void Update(ecs::World& world, float dt) override
+	void Update(ecs::Scene& world, float dt) override
 	{
 		auto start = std::chrono::high_resolution_clock::now();
 
@@ -81,7 +81,7 @@ public:
 class DamageSystem : public ecs::System
 {
 public:
-	void Update(ecs::World& world, float dt) override
+	void Update(ecs::Scene& world, float dt) override
 	{
 		auto type = typeid(DamageSystem).name();
 
@@ -114,7 +114,7 @@ struct DrawData
 class RenderDataSystem : public ecs::System
 {
 public:
-	void Update(ecs::World& world, float dt) override
+	void Update(ecs::Scene& world, float dt) override
 	{
 		m_drawData.clear();
 		m_drawData.reserve(Entities.size());
@@ -168,7 +168,7 @@ int main()
 	std::cout << "Duration: " << BENCHMARK_SECONDS << " seconds" << std::endl;
 	std::cout << "_____________________" << std::endl;
 
-	ecs::World world;
+	ecs::Scene world;
 
 	{
 		Timer timer("Setup: Registering components and systems");

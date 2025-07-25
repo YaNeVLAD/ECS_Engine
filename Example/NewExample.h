@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Engine/src/ECS/World/World.h"
+#include "../Engine/src/ECS/Scene/Scene.h"
 #include "SFML/Graphics.hpp"
 #include <random>
 
@@ -42,7 +42,7 @@ struct Collider
 class HandleInputSystem : public ecs::System
 {
 public:
-	void Update(ecs::World& world, float dt) override
+	void Update(ecs::Scene& world, float dt) override
 	{
 		for (const auto& entity : Entities)
 		{
@@ -67,7 +67,7 @@ public:
 class MovementSystem : public ecs::System
 {
 public:
-	void Update(ecs::World& world, float dt) override
+	void Update(ecs::Scene& world, float dt) override
 	{
 		for (const auto& entity : Entities)
 		{
@@ -83,7 +83,7 @@ public:
 class ColliderUpdateSystem : public ecs::System
 {
 public:
-	void Update(ecs::World& world, float dt) override
+	void Update(ecs::Scene& world, float dt) override
 	{
 		for (const auto& entity : Entities)
 		{
@@ -99,12 +99,12 @@ public:
 class CollisionSystem : public ecs::System
 {
 public:
-	CollisionSystem(ecs::World& world)
+	CollisionSystem(ecs::Scene& world)
 	{
 		m_allCollidables = world.CreateView<Collider, Renderable>();
 	}
 
-	void Update(ecs::World& world, float dt) override
+	void Update(ecs::Scene& world, float dt) override
 	{
 		for (auto [entity, collider, renderable] : m_allCollidables->Each())
 		{
@@ -141,7 +141,7 @@ public:
 	{
 	}
 
-	void Update(ecs::World& world, float dt) override
+	void Update(ecs::Scene& world, float dt) override
 	{
 		for (const auto& entity : Entities)
 		{
@@ -185,7 +185,7 @@ public:
 	{
 		const int ENTITY_COUNT = 10;
 
-		ecs::World world;
+		ecs::Scene world;
 		Renderer renderer;
 		sf::RenderWindow window(sf::VideoMode(1920, 1080), "New ECS Demo");
 		window.setFramerateLimit(144);

@@ -75,7 +75,7 @@
     <ClInclude Include="src\ECS\SystemManager\SystemManager.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="src\ECS\World\World.h">
+    <ClInclude Include="src\ECS\Scene\Scene.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="src\ECS\View\Iterator\ViewIterator.h">
