@@ -8,7 +8,9 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "Example/NewExample.h"
+#include "Example/scripts/ScriptExample.h"
+
+#include "Engine/src/Types/Types.h"
 
 #define BENCHMARK_ON 0
 
@@ -287,7 +289,14 @@ int main()
 #endif
 
 	Game game;
-	game.Run();
+
+	Float f = 42.f;
+	Int i = 42;
+
+	Float i2 = i;
+
+	std::cout << std::boolalpha << (f == i);
+	// game.Run();
 
 	return 0;
 }

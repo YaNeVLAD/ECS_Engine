@@ -18,13 +18,22 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Example\ExampleGame.h">
+    <ClInclude Include="Example\legacy\ExampleGame.h">
       <Filter>Файлы заголовков\example</Filter>
     </ClInclude>
     <ClInclude Include="Timer.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="Example\NewExample.h">
+    <ClInclude Include="Example\new\NewExample.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Example\scripts\ScriptExample.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Example\scripts\PlayerController.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Example\scripts\Components.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

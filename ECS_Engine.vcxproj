@@ -138,8 +138,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Example\ExampleGame.h" />
-    <ClInclude Include="Example\NewExample.h" />
+    <ClInclude Include="Example\legacy\ExampleGame.h" />
+    <ClInclude Include="Example\new\NewExample.h" />
+    <ClInclude Include="Example\scripts\Components.h" />
+    <ClInclude Include="Example\scripts\PlayerController.h" />
+    <ClInclude Include="Example\scripts\ScriptExample.h" />
     <ClInclude Include="Timer.h" />
   </ItemGroup>
   <ItemGroup>

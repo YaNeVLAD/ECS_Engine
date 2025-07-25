@@ -1,68 +1,13 @@
 #pragma once
 
-#include "../Engine/src/ECS/Scene/Scene.h"
-#include "SFML/Graphics.hpp"
 #include <random>
 
-struct Position
-{
-	float x = 0.0f, y = 0.0f;
-};
+#include "../../Engine/src/ECS/Scene/Scene.h"
+#include "../../Engine/src/Script/native/ScriptComponent.h"
+#include "../../Engine/src/Script/native/ScriptingSystem.h"
 
-struct Velocity
-{
-	float vx = 0.0f, vy = 0.0f;
-};
-
-struct Renderable
-{
-	Renderable(sf::Color color)
-		: rect({ 50.f, 50.f })
-	{
-		rect.setFillColor(color);
-	}
-	sf::RectangleShape rect;
-};
-
-struct Input
-{
-	bool moveLeft = false, moveRight = false, moveUp = false, moveDown = false;
-};
-
-struct Camera
-{
-	sf::View* view;
-};
-
-struct Collider
-{
-	sf::FloatRect rect;
-};
-
-class HandleInputSystem : public ecs::System
-{
-public:
-	void Update(ecs::Scene& world, float dt) override
-	{
-		for (const auto& entity : Entities)
-		{
-			const auto& input = world.GetComponent<Input>(entity);
-			auto& velocity = world.GetComponent<Velocity>(entity);
-
-			velocity.vx = 0.f;
-			velocity.vy = 0.f;
-
-			if (input.moveLeft)
-				velocity.vx -= 500.f;
-			if (input.moveRight)
-				velocity.vx += 500.f;
-			if (input.moveUp)
-				velocity.vy -= 500.f;
-			if (input.moveDown)
-				velocity.vy += 500.f;
-		}
-	}
-};
+#include "Components.h"
+#include "PlayerController.h"
 
 class MovementSystem : public ecs::System
 {
@@ -196,10 +141,7 @@ public:
 		world.RegisterComponent<Input>();
 		world.RegisterComponent<Camera>();
 		world.RegisterComponent<Collider>();
-
-		world.RegisterSystem<HandleInputSystem>()
-			.WithRead<Input>()
-			.WithWrite<Velocity>();
+		world.RegisterComponent<ecs::ScriptComponent>();
 
 		world.RegisterSystem<MovementSystem>()
 			.WithRead<Velocity>()
@@ -217,6 +159,9 @@ public:
 			.WithRead<Position>()
 			.WithWrite<Camera>();
 
+		world.RegisterSystem<ecs::ScriptingSystem>()
+			.WithRead<ecs::ScriptComponent>();
+
 		world.BuildSystemGraph();
 
 		sf::View cameraView = window.getDefaultView();
@@ -227,6 +172,9 @@ public:
 		world.AddComponent<Input>(playerEntity, {});
 		world.AddComponent<Camera>(playerEntity, { &cameraView });
 		world.AddComponent<Collider>(playerEntity, { { 960.f, 540.f, 50.f, 50.f } });
+		world.AddComponent<ecs::ScriptComponent>(playerEntity, {});
+		world.GetComponent<ecs::ScriptComponent>(playerEntity)
+			.Bind<PlayerController>(world, playerEntity);
 
 		std::mt19937 rng(std::random_device{}());
 		std::uniform_real_distribution<float> pos_dist(300.f, 1000.f);

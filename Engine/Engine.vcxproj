@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -42,6 +42,14 @@
     <ClInclude Include="src\ECS\View\Iterator\ViewIterator.h" />
     <ClInclude Include="src\ECS\View\View.h" />
     <ClInclude Include="src\ECS\ViewManager\ViewManager.h" />
+    <ClInclude Include="src\Script\common\ScriptableEntity.h" />
+    <ClInclude Include="src\Script\common\ScriptComponent.h" />
+    <ClInclude Include="src\Script\common\ScriptingSystem.h" />
+    <ClInclude Include="src\Script\native\ScriptableEntity.h" />
+    <ClInclude Include="src\Script\native\ScriptComponent.h" />
+    <ClInclude Include="src\Script\native\ScriptingSystem.h" />
+    <ClInclude Include="src\Types\SimpleType.h" />
+    <ClInclude Include="src\Types\Types.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
