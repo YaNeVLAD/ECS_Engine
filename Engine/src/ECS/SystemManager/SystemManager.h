@@ -34,16 +34,13 @@ public:
 		return *this;
 	}
 
-	template <typename _TComponent>
+	template <typename... _TComponents>
 	SystemManager& WithRead()
 	{
 		assert(m_currentSystemId != InvalidEntity
 			&& "No system selected for dependency registration.");
 
-		ComponentType componentType = TypeIdOf<_TComponent>();
-
-		m_signatures[m_currentSystemId].set(componentType);
-		m_readDependencies[m_currentSystemId].set(componentType);
+		(AddReadDependency<_TComponents>(), ...);
 
 		return *this;
 	}
@@ -164,6 +161,16 @@ public:
 				});
 			}
 		}
+	}
+
+private:
+	template <typename _TComponent>
+	void AddReadDependency()
+	{
+		ComponentType componentType = TypeIdOf<_TComponent>();
+
+		m_signatures[m_currentSystemId].set(componentType);
+		m_readDependencies[m_currentSystemId].set(componentType);
 	}
 
 private:
