@@ -40,6 +40,12 @@ public:
 		m_componentManager->RegisterComponent<_TComponent>();
 	}
 
+	template <typename... _TComponents>
+	void RegisterComponents()
+	{
+		(m_componentManager->RegisterComponent<_TComponents>(), ...);
+	}
+
 	template <typename _TComponent>
 	void AddComponent(Entity entity, _TComponent const& component)
 	{

@@ -2,6 +2,13 @@
 
 #include <random>
 
+#include <GLFW/glfw3.h>
+#include <glad/glad.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
+#include <tracy/Tracy.hpp>
+
 #include "../../Engine/src/ECS/Scene/Scene.h"
 #include "../../Engine/src/Script/native/ScriptComponent.h"
 #include "../../Engine/src/Script/native/ScriptingSystem.h"
@@ -14,13 +21,14 @@ class MovementSystem : public ecs::System
 public:
 	void Update(ecs::Scene& world, float dt) override
 	{
+		ZoneScoped;
 		for (const auto& entity : Entities)
 		{
 			auto& position = world.GetComponent<Position>(entity);
 			const auto& velocity = world.GetComponent<Velocity>(entity);
 
-			position.x += velocity.vx * dt;
-			position.y += velocity.vy * dt;
+			position.pos.x += velocity.vel.x * dt;
+			position.pos.y += velocity.vel.y * dt;
 		}
 	}
 };
@@ -30,13 +38,14 @@ class ColliderUpdateSystem : public ecs::System
 public:
 	void Update(ecs::Scene& world, float dt) override
 	{
+		ZoneScoped;
 		for (const auto& entity : Entities)
 		{
 			const auto& position = world.GetComponent<Position>(entity);
 			auto& collider = world.GetComponent<Collider>(entity);
 
-			collider.rect.left = position.x;
-			collider.rect.top = position.y;
+			collider.box.x = position.pos.x;
+			collider.box.y = position.pos.y;
 		}
 	}
 };
@@ -51,11 +60,14 @@ public:
 
 	void Update(ecs::Scene& world, float dt) override
 	{
+		ZoneScoped;
+		// Сначала сбрасываем цвет всех объектов на красный
 		for (auto [entity, collider, renderable] : m_allCollidables->Each())
 		{
-			renderable.rect.setFillColor(sf::Color::Red);
+			renderable.color = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f); // Красный
 		}
 
+		// Теперь проверяем коллизии и меняем цвет на голубой при столкновении
 		for (const auto& entity : Entities)
 		{
 			auto& renderable = world.GetComponent<Renderable>(entity);
@@ -66,9 +78,9 @@ public:
 				if (entity == otherEntity)
 					continue;
 
-				if (collider.rect.intersects(otherCollider.rect))
+				if (collider.box.intersects(otherCollider.box))
 				{
-					renderable.rect.setFillColor(sf::Color::Cyan);
+					renderable.color = glm::vec4(0.0f, 1.0f, 1.0f, 1.0f); // Голубой (Cyan)
 				}
 			}
 		}
@@ -81,46 +93,129 @@ private:
 class CameraSystem : public ecs::System
 {
 public:
-	CameraSystem(sf::RenderWindow& window)
-		: m_window(window)
+	// Конструктор принимает начальную позицию и ссылку на матрицу вида, которую будет обновлять
+	CameraSystem(glm::vec2 startPos, glm::mat4& viewMatrix)
+		: m_viewMatrix(viewMatrix)
+		, m_cameraCenter(startPos)
 	{
 	}
 
 	void Update(ecs::Scene& world, float dt) override
 	{
+		ZoneScoped;
 		for (const auto& entity : Entities)
 		{
 			const auto& position = world.GetComponent<Position>(entity);
-			auto& cameraComponent = world.GetComponent<Camera>(entity);
 
-			sf::View* cameraView = cameraComponent.view;
-			if (cameraView)
-			{
-				auto targetPos = sf::Vector2f(position.x, position.y);
-				cameraView->setCenter(cameraView->getCenter() + (targetPos - cameraView->getCenter()) * 0.05f);
-			}
+			m_cameraCenter += (position.pos - m_cameraCenter) * 0.05f;
+
+			glm::vec3 eye = { m_cameraCenter.x, m_cameraCenter.y, 1.0f };
+			glm::vec3 center = { m_cameraCenter.x, m_cameraCenter.y, 0.0f };
+			glm::vec3 up = { 0.0f, 1.0f, 0.0f };
+
+			m_viewMatrix = glm::lookAt(eye, center, up);
 		}
 	}
 
 private:
-	sf::RenderWindow& m_window;
+	glm::mat4& m_viewMatrix;
+	glm::vec2 m_cameraCenter;
 };
 
 class Renderer
 {
 public:
-	void Draw(sf::RenderWindow& window, ecs::View<Position, Renderable>& view)
+	void Init(const char* vsSource, const char* fsSource)
 	{
-		window.clear(sf::Color::Black);
+		// Компиляция шейдеров
+		unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
+		glShaderSource(vertexShader, 1, &vsSource, NULL);
+		glCompileShader(vertexShader);
+		// (Проверка ошибок компиляции)
+
+		unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+		glShaderSource(fragmentShader, 1, &fsSource, NULL);
+		glCompileShader(fragmentShader);
+		// (Проверка ошибок компиляции)
+
+		m_shaderProgram = glCreateProgram();
+		glAttachShader(m_shaderProgram, vertexShader);
+		glAttachShader(m_shaderProgram, fragmentShader);
+		glLinkProgram(m_shaderProgram);
+		// (Проверка ошибок линковки)
+		glDeleteShader(vertexShader);
+		glDeleteShader(fragmentShader);
+
+		// Геометрия квадрата (2 треугольника)
+		float vertices[] = {
+			// pos
+			0.0f, 1.0f,
+			1.0f, 0.0f,
+			0.0f, 0.0f,
+			1.0f, 1.0f
+		};
+		unsigned int indices[] = {
+			0, 2, 1,
+			0, 1, 3
+		};
+
+		glGenVertexArrays(1, &m_quadVAO);
+		glGenBuffers(1, &m_quadVBO);
+		glGenBuffers(1, &m_quadEBO);
+
+		glBindVertexArray(m_quadVAO);
+
+		glBindBuffer(GL_ARRAY_BUFFER, m_quadVBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_quadEBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(0);
+
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindVertexArray(0);
+	}
+
+	void Draw(ecs::View<Position, Renderable>& view, const glm::mat4& projection, const glm::mat4& viewMatrix)
+	{
+		ZoneScoped;
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		glUseProgram(m_shaderProgram);
+		glUniformMatrix4fv(glGetUniformLocation(m_shaderProgram, "projection"), 1, GL_FALSE, &projection[0][0]);
+		glUniformMatrix4fv(glGetUniformLocation(m_shaderProgram, "view"), 1, GL_FALSE, &viewMatrix[0][0]);
+
+		glBindVertexArray(m_quadVAO);
 
 		for (auto [entity, position, renderable] : view.Each())
 		{
-			renderable.rect.setPosition(position.x, position.y);
-			window.draw(renderable.rect);
+			glm::mat4 model = glm::mat4(1.0f);
+			model = glm::translate(model, glm::vec3(position.pos, 0.0f));
+			model = glm::scale(model, glm::vec3(renderable.size, 1.0f));
+
+			glUniformMatrix4fv(glGetUniformLocation(m_shaderProgram, "model"), 1, GL_FALSE, &model[0][0]);
+			glUniform4fv(glGetUniformLocation(m_shaderProgram, "objectColor"), 1, &renderable.color[0]);
+
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		}
 
-		window.display();
+		glBindVertexArray(0);
 	}
+
+	void Shutdown()
+	{
+		glDeleteVertexArrays(1, &m_quadVAO);
+		glDeleteBuffers(1, &m_quadVBO);
+		glDeleteBuffers(1, &m_quadEBO);
+		glDeleteProgram(m_shaderProgram);
+	}
+
+private:
+	unsigned int m_shaderProgram;
+	unsigned int m_quadVAO, m_quadVBO, m_quadEBO;
 };
 
 class Game
@@ -128,53 +223,98 @@ class Game
 public:
 	void Run()
 	{
+		const int SCREEN_WIDTH = 1920;
+		const int SCREEN_HEIGHT = 1080;
 		const int ENTITY_COUNT = 10;
 
+		// --- Инициализация GLFW и GLAD ---
+		glfwInit();
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+		GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "New ECS Demo (GLFW)", NULL, NULL);
+		if (window == NULL)
+		{
+			std::cout << "Failed to create GLFW window" << std::endl;
+			glfwTerminate();
+			return;
+		}
+		glfwMakeContextCurrent(window);
+		glfwSwapInterval(0); // v-sync on
+
+		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+		{
+			std::cout << "Failed to initialize GLAD" << std::endl;
+			return;
+		}
+
+		glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+
+		// --- Шейдеры ---
+		const char* vsSource = R"glsl(
+			#version 330 core
+			layout (location = 0) in vec2 aPos;
+
+			uniform mat4 model;
+			uniform mat4 view;
+			uniform mat4 projection;
+
+			void main()
+			{
+				gl_Position = projection * view * model * vec4(aPos, 0.0, 1.0);
+			}
+		)glsl";
+		const char* fsSource = R"glsl(
+			#version 330 core
+			out vec4 FragColor;
+
+			uniform vec4 objectColor;
+
+			void main()
+			{
+				FragColor = objectColor;
+			}
+		)glsl";
+
+		// --- ECS и Рендерер ---
 		ecs::Scene world;
 		Renderer renderer;
-		sf::RenderWindow window(sf::VideoMode(1920, 1080), "New ECS Demo");
-		window.setFramerateLimit(144);
+		renderer.Init(vsSource, fsSource);
 
-		world.RegisterComponent<Position>();
-		world.RegisterComponent<Velocity>();
-		world.RegisterComponent<Renderable>();
-		world.RegisterComponent<Input>();
-		world.RegisterComponent<Camera>();
-		world.RegisterComponent<Collider>();
-		world.RegisterComponent<ecs::ScriptComponent>();
+		world.RegisterComponents<Position, Velocity, Renderable, Input, Camera, Collider, ecs::ScriptComponent>();
+
+		// Матрица вида, которая будет обновляться CameraSystem
+		glm::mat4 viewMatrix = glm::mat4(1.0f);
+		glm::vec2 playerStartPos = { 960.f, 540.f };
 
 		world.RegisterSystem<MovementSystem>()
 			.WithRead<Velocity>()
 			.WithWrite<Position>();
-
 		world.RegisterSystem<ColliderUpdateSystem>()
 			.WithRead<Position>()
 			.WithWrite<Collider>();
-
 		world.RegisterSystem<CollisionSystem>(world)
 			.WithRead<Collider>()
 			.WithWrite<Renderable>();
-
-		world.RegisterSystem<CameraSystem>(window)
+		world.RegisterSystem<CameraSystem>(playerStartPos, viewMatrix)
 			.WithRead<Position>()
 			.WithWrite<Camera>();
-
 		world.RegisterSystem<ecs::ScriptingSystem>()
 			.WithRead<ecs::ScriptComponent>();
 
 		world.BuildSystemGraph();
 
-		sf::View cameraView = window.getDefaultView();
+		// --- Создание сущностей ---
 		ecs::Entity playerEntity = world.CreateEntity();
-		world.AddComponent<Position>(playerEntity, { 960.f, 540.f });
+		world.AddComponent<Position>(playerEntity, { playerStartPos });
 		world.AddComponent<Velocity>(playerEntity, {});
-		world.AddComponent<Renderable>(playerEntity, { sf::Color::Green });
+		world.AddComponent<Renderable>(playerEntity, { { 50.f, 50.f }, { 0.f, 1.f, 0.f, 1.f } }); // Green
 		world.AddComponent<Input>(playerEntity, {});
-		world.AddComponent<Camera>(playerEntity, { &cameraView });
-		world.AddComponent<Collider>(playerEntity, { { 960.f, 540.f, 50.f, 50.f } });
+		world.AddComponent<Camera>(playerEntity, {});
+		world.AddComponent<Collider>(playerEntity, { { playerStartPos.x, playerStartPos.y, 50.f, 50.f } });
 		world.AddComponent<ecs::ScriptComponent>(playerEntity, {});
-		world.GetComponent<ecs::ScriptComponent>(playerEntity)
-			.Bind<PlayerController>(world, playerEntity);
+		world.GetComponent<ecs::ScriptComponent>(playerEntity).Bind<PlayerController>(world, playerEntity);
 
 		std::mt19937 rng(std::random_device{}());
 		std::uniform_real_distribution<float> pos_dist(300.f, 1000.f);
@@ -183,41 +323,53 @@ public:
 			float x = pos_dist(rng);
 			float y = pos_dist(rng);
 			auto entity = world.CreateEntity();
-			world.AddComponent<Position>(entity, { x, y });
-			world.AddComponent<Renderable>(entity, { sf::Color::Red });
+			world.AddComponent<Position>(entity, { { x, y } });
+			world.AddComponent<Renderable>(entity, { { 50.f, 50.f }, { 1.f, 0.f, 0.f, 1.f } }); // Red
 			world.AddComponent<Collider>(entity, { { x, y, 50.f, 50.f } });
 		}
 
 		auto renderView = world.CreateView<Position, Renderable>();
 
-		sf::Clock clock;
-		sf::Event event;
+		// --- Главный цикл ---
+		auto lastTime = std::chrono::high_resolution_clock::now();
 
-		while (window.isOpen())
+		while (!glfwWindowShouldClose(window))
 		{
-			while (window.pollEvent(event))
-			{
-				if (event.type == sf::Event::Closed)
-					window.close();
+			auto currentTime = std::chrono::high_resolution_clock::now();
+			float dt = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - lastTime).count();
+			lastTime = currentTime;
 
-				auto& playerInput = world.GetComponent<Input>(playerEntity);
-				playerInput.moveLeft = sf::Keyboard::isKeyPressed(sf::Keyboard::A);
-				playerInput.moveRight = sf::Keyboard::isKeyPressed(sf::Keyboard::D);
-				playerInput.moveUp = sf::Keyboard::isKeyPressed(sf::Keyboard::W);
-				playerInput.moveDown = sf::Keyboard::isKeyPressed(sf::Keyboard::S);
-			}
+			// --- Обработка ввода ---
+			glfwPollEvents();
+			if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+				glfwSetWindowShouldClose(window, true);
 
-			float dt = clock.restart().asSeconds();
+			auto& playerInput = world.GetComponent<Input>(playerEntity);
+			playerInput.moveLeft = glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS;
+			playerInput.moveRight = glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS;
+			playerInput.moveUp = glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS;
+			playerInput.moveDown = glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS;
 
+			// --- Обновление мира ---
 			world.TakeStep(dt);
-
 			world.ConfirmChanges();
 
-			window.setView(cameraView);
+			// --- Рендеринг ---
+			// Ортографическая проекция, совпадающая с размерами окна
+			glm::mat4 projection = glm::ortho(0.0f, (float)SCREEN_WIDTH, (float)SCREEN_HEIGHT, 0.0f, -1.0f, 1.0f);
 
-			renderer.Draw(window, *renderView);
+			renderer.Draw(*renderView, projection, viewMatrix);
 
-			window.setTitle("FPS: " + std::to_string(static_cast<int>(1.f / dt)));
+			glfwSwapBuffers(window);
+
+			std::string title = "FPS: " + std::to_string(static_cast<int>(1.f / dt));
+			glfwSetWindowTitle(window, title.c_str());
+
+			FrameMark;
 		}
+
+		// --- Очистка ---
+		renderer.Shutdown();
+		glfwTerminate();
 	}
 };

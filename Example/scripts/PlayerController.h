@@ -19,16 +19,16 @@ public:
 		auto& velocity = GetComponent<Velocity>();
 		const auto& input = GetComponent<Input>();
 
-		velocity.vx = 0.f;
-		velocity.vy = 0.f;
+		velocity.vel.x = 0.f;
+		velocity.vel.y = 0.f;
 
 		if (input.moveLeft)
-			velocity.vx -= 500.f;
+			velocity.vel.x -= 500.f;
 		if (input.moveRight)
-			velocity.vx += 500.f;
+			velocity.vel.x += 500.f;
 		if (input.moveUp)
-			velocity.vy -= 500.f;
+			velocity.vel.y -= 500.f;
 		if (input.moveDown)
-			velocity.vy += 500.f;
+			velocity.vel.y += 500.f;
 	}
 };

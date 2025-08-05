@@ -6,8 +6,6 @@
 
 #include "Engine/src/ECS/Scene/Scene.h"
 
-#include <SFML/Graphics.hpp>
-
 #include "Example/scripts/ScriptExample.h"
 
 #include "Engine/src/Types/Types.h"
@@ -289,14 +287,7 @@ int main()
 #endif
 
 	Game game;
-
-	Float f = 42.f;
-	Int i = 42;
-
-	Float i2 = i;
-
-	std::cout << std::boolalpha << (f == i);
-	// game.Run();
+	game.Run();
 
 	return 0;
 }
