@@ -100,7 +100,7 @@ class CameraSystem : public ecs::System
 {
 public:
 	// Добавляем ширину и высоту экрана в конструктор
-	CameraSystem(glm::vec2 startPos, glm::mat4& viewMatrix, float screenWidth, float screenHeight)
+	CameraSystem(glm::vec2 startPos, glm::mat4& viewMatrix, int screenWidth, int screenHeight)
 		: m_viewMatrix(viewMatrix)
 		, m_cameraCenter(startPos)
 		, m_screenWidth(screenWidth)
@@ -122,7 +122,7 @@ public:
 
 			glm::mat4 lookAtMatrix = glm::lookAt(eye, center, up);
 
-			glm::mat4 translateMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(m_screenWidth * 0.5f, m_screenHeight * 0.5f, 0.0f));
+			glm::mat4 translateMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(m_screenWidth / 2, m_screenHeight / 2, 0.0f));
 
 			m_viewMatrix = translateMatrix * lookAtMatrix;
 		}
@@ -131,8 +131,8 @@ public:
 private:
 	glm::mat4& m_viewMatrix;
 	glm::vec2 m_cameraCenter;
-	float m_screenWidth;
-	float m_screenHeight;
+	int m_screenWidth;
+	int m_screenHeight;
 };
 
 class Renderer
