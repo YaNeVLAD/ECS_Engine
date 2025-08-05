@@ -13,34 +13,21 @@ namespace ecs
 template <typename... _TComponents>
 class View final : public IView
 {
-private:
-	class Iterable
-	{
-	public:
-		Iterable(ComponentManager& manager, std::vector<Entity>& entities)
-			: m_manager(manager)
-			, m_entities(entities)
-		{
-		}
-		auto begin() { return ViewIterator<_TComponents...>(m_manager, m_entities.begin()); }
-		auto end() { return ViewIterator<_TComponents...>(m_manager, m_entities.end()); }
-
-	private:
-		ComponentManager& m_manager;
-		std::vector<Entity>& m_entities;
-	};
-
 public:
+	using Iterator = ViewIterator<false, _TComponents...>;
+	using ConstIterator = ViewIterator<true, _TComponents...>;
+
 	View(ComponentManager& manager, Signature signature)
 		: m_manager(manager)
 		, m_signature(signature)
 	{
 	}
 
-	Iterable Each()
-	{
-		return Iterable(m_manager, m_entities);
-	}
+	auto begin() { return Iterator(m_manager, m_entities.begin()); }
+	auto end() { return Iterator(m_manager, m_entities.end()); }
+
+	auto begin() const { return ConstIterator(m_manager, m_entities.cbegin()); }
+	auto end() const { return ConstIterator(m_manager, m_entities.cend()); }
 
 	void AddEntity(Entity entity)
 	{

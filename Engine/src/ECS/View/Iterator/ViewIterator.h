@@ -8,12 +8,20 @@
 namespace ecs
 {
 
-template <typename... _TComponents>
+template <bool IsConst, typename... _TComponents>
 class ViewIterator final
 {
-	using EntityIterator = typename std::vector<Entity>::iterator;
-
 public:
+	using EntityIterator = std::conditional_t<IsConst,
+		typename std::vector<Entity>::const_iterator,
+		typename std::vector<Entity>::iterator>;
+
+	using iterator_category = std::forward_iterator_tag;
+	using difference_type = std::ptrdiff_t;
+	using value_type = std::conditional_t<IsConst,
+		std::tuple<Entity, const _TComponents&...>,
+		std::tuple<Entity, _TComponents&...>>;
+
 	ViewIterator(ComponentManager& manager, EntityIterator it)
 		: m_manager(manager)
 		, m_it(it)
@@ -26,16 +34,29 @@ public:
 		return *this;
 	}
 
-	std::tuple<Entity, _TComponents...> operator*() const
+	ViewIterator operator++(int)
 	{
-		Entity entity = *m_it;
-		return std::tie(entity, m_manager.GetComponent<_TComponents>(entity)...);
+		ViewIterator tmp = *this;
+		++(*this);
+		return tmp;
 	}
 
-	bool operator!=(ViewIterator const& other)
+	value_type operator*() const
 	{
-		return m_it != other.m_it;
+		Entity entity = *m_it;
+
+		if constexpr (IsConst)
+		{
+			return std::forward_as_tuple(entity, std::as_const(m_manager).GetComponent<_TComponents>(entity)...);
+		}
+		else
+		{
+			return std::forward_as_tuple(entity, m_manager.GetComponent<_TComponents>(entity)...);
+		}
 	}
+
+	bool operator!=(const ViewIterator& other) const { return m_it != other.m_it; }
+	bool operator==(const ViewIterator& other) const { return m_it == other.m_it; }
 
 private:
 	ComponentManager& m_manager;

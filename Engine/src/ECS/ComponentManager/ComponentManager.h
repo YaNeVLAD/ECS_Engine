@@ -44,6 +44,12 @@ public:
 	}
 
 	template <typename _TComponent>
+	_TComponent const& GetComponent(Entity entity) const
+	{
+		return GetComponentArray<_TComponent>()->GetComponent(entity);
+	}
+
+	template <typename _TComponent>
 	bool HasComponent(Entity entity) const
 	{
 		return GetComponentArray<_TComponent>()->HasComponent(entity);

@@ -58,6 +58,8 @@ public:
 
 class CollisionSystem : public ecs::System
 {
+	using RenderView = ecs::View<Collider, Renderable>;
+
 public:
 	CollisionSystem(ecs::Scene& world)
 	{
@@ -67,39 +69,36 @@ public:
 	void Update(ecs::Scene& world, float dt) override
 	{
 		ZoneScoped;
-		// Сначала сбрасываем цвет всех объектов на красный
-		for (auto [entity, collider, renderable] : m_allCollidables->Each())
+		for (auto&& [entity, collider, renderable] : *m_allCollidables)
 		{
-			renderable.color = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f); // Красный
+			renderable.color = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
 		}
 
-		// Теперь проверяем коллизии и меняем цвет на голубой при столкновении
 		for (auto& entity : Entities)
 		{
 			auto& renderable = entity.GetComponent<Renderable>();
 			const auto& collider = entity.GetComponent<Collider>();
 
-			for (auto [otherEntity, otherCollider, otherRenderable] : m_allCollidables->Each())
+			for (auto [otherEntity, otherCollider, otherRenderable] : *m_allCollidables)
 			{
 				if (entity == otherEntity)
 					continue;
 
 				if (collider.box.intersects(otherCollider.box))
 				{
-					renderable.color = glm::vec4(0.0f, 1.0f, 1.0f, 1.0f); // Голубой (Cyan)
+					renderable.color = glm::vec4(0.0f, 1.0f, 1.0f, 1.0f);
 				}
 			}
 		}
 	}
 
 private:
-	std::shared_ptr<ecs::View<Collider, Renderable>> m_allCollidables;
+	std::shared_ptr<RenderView> m_allCollidables;
 };
 
 class CameraSystem : public ecs::System
 {
 public:
-	// Добавляем ширину и высоту экрана в конструктор
 	CameraSystem(glm::vec2 startPos, glm::mat4& viewMatrix, int screenWidth, int screenHeight)
 		: m_viewMatrix(viewMatrix)
 		, m_cameraCenter(startPos)
@@ -190,7 +189,7 @@ public:
 		glBindVertexArray(0);
 	}
 
-	void Draw(ecs::View<Position, Renderable>& view, const glm::mat4& projection, const glm::mat4& viewMatrix)
+	void Draw(ecs::View<Position, Renderable> const& view, glm::mat4 const& projection, glm::mat4 const& viewMatrix) const
 	{
 		ZoneScoped;
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -202,7 +201,7 @@ public:
 
 		glBindVertexArray(m_quadVAO);
 
-		for (auto [entity, position, renderable] : view.Each())
+		for (const auto& [entity, position, renderable] : view)
 		{
 			glm::mat4 model = glm::mat4(1.0f);
 			model = glm::translate(model, glm::vec3(position.pos, 0.0f));
@@ -217,7 +216,7 @@ public:
 		glBindVertexArray(0);
 	}
 
-	void Shutdown()
+	void Shutdown() const
 	{
 		glDeleteVertexArrays(1, &m_quadVAO);
 		glDeleteBuffers(1, &m_quadVBO);

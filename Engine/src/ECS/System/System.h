@@ -2,7 +2,6 @@
 
 #include <vector>
 
-#include "../Entity/Entity.h"
 #include "../EntityWrapper/EntityWrapper.h"
 
 namespace ecs

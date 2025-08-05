@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cassert>
+#include <concepts>
 #include <ranges>
 #include <unordered_map>
 #include <vector>
@@ -36,7 +37,14 @@ public:
 		size_t removedIndex = m_entityToIndex.at(entity);
 		size_t lastIndex = m_components.size() - 1;
 
-		m_components[removedIndex] = std::move(m_components[lastIndex]);
+		if constexpr (std::movable<_TComponent>)
+		{
+			m_components[removedIndex] = std::move(m_components[lastIndex]);
+		}
+		else
+		{
+			m_components[removedIndex] = m_components[lastIndex];
+		}
 
 		Entity lastEntity = m_indexToEntity.at(lastIndex);
 		m_entityToIndex[lastEntity] = removedIndex;
