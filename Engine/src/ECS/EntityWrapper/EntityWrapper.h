@@ -2,7 +2,6 @@
 
 #include "../Entity/Entity.h"
 #include "../Entity/Signature.h"
-#include "../Scene/Scene.h"
 
 namespace ecs
 {
