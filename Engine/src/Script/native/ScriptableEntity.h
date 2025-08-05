@@ -34,7 +34,7 @@ protected:
 	}
 
 private:
-	ecs::Entity m_entity = nullptr;
+	ecs::Entity m_entity = InvalidEntity;
 	ecs::Scene* m_scene = nullptr;
 
 	friend class ScriptComponent;
