@@ -6,10 +6,9 @@
 #include <unordered_map>
 #include <vector>
 
-#include "../System/System.h"
-
 #include "../ComponentManager/ComponentManager.h"
 #include "../EntityManager/EntityManager.h"
+#include "../System/System.h"
 #include "../TypeId/TypeId.h"
 
 namespace ecs
@@ -76,22 +75,24 @@ public:
 		return *static_cast<_TSystem*>(m_systems.at(systemId).get());
 	}
 
-	void OnEntitySignatureChanged(Entity entity, Signature entitySignature)
+	void OnEntitySignatureChanged(Entity entity, Signature entitySignature, Scene* scene)
 	{
+		auto wrapper = System::WrappedEntity{ scene, entity, entitySignature };
+
 		for (auto const& [id, system] : m_systems)
 		{
 			Signature const& systemSignature = m_signatures.at(id);
 
 			if ((entitySignature & systemSignature) == systemSignature)
 			{
-				if (std::ranges::find(system->Entities, entity) == system->Entities.end())
+				if (std::ranges::find(system->Entities, wrapper) == system->Entities.end())
 				{
-					system->Entities.push_back(entity);
+					system->Entities.push_back(wrapper);
 				}
 			}
 			else
 			{
-				std::erase(system->Entities, entity);
+				std::erase(system->Entities, wrapper);
 			}
 		}
 	}

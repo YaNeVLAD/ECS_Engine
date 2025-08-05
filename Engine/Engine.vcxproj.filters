@@ -114,5 +114,8 @@
     <ClInclude Include="src\Types\SimpleType.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="src\ECS\EntityWrapper\EntityWrapper.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

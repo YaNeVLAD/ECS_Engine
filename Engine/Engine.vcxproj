@@ -23,6 +23,7 @@
     <ClInclude Include="src\ECS\ComponentManager\ComponentManager.h" />
     <ClInclude Include="src\ECS\ComponentArray\ComponentArray.h" />
     <ClInclude Include="src\ECS\ComponentArray\IComponentArray.h" />
+    <ClInclude Include="src\ECS\EntityWrapper\EntityWrapper.h" />
     <ClInclude Include="src\ECS\Entity\Entity.h" />
     <ClInclude Include="src\ECS\Entity\Signature.h" />
     <ClInclude Include="src\ECS\legacy\ecs.hpp" />

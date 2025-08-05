@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "../Entity/Entity.h"
+#include "../EntityWrapper/EntityWrapper.h"
 
 namespace ecs
 {
@@ -12,11 +13,13 @@ class System
 {
 
 public:
+	using WrappedEntity = EntityWrapper<Scene>;
+
 	virtual ~System() = default;
 
 	virtual void Update(Scene& scene, float dt) = 0;
 
-	std::vector<Entity> Entities;
+	std::vector<WrappedEntity> Entities;
 };
 
 } // namespace ecs

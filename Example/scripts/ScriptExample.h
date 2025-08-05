@@ -28,10 +28,10 @@ public:
 	void Update(ecs::Scene& world, float dt) override
 	{
 		ZoneScoped;
-		for (const auto& entity : Entities)
+		for (auto& entity : Entities)
 		{
-			auto& position = world.GetComponent<Position>(entity);
-			const auto& velocity = world.GetComponent<Velocity>(entity);
+			auto& position = entity.GetComponent<Position>();
+			const auto& velocity = entity.GetComponent<Velocity>();
 
 			position.pos.x += velocity.vel.x * dt;
 			position.pos.y += velocity.vel.y * dt;
@@ -45,10 +45,10 @@ public:
 	void Update(ecs::Scene& world, float dt) override
 	{
 		ZoneScoped;
-		for (const auto& entity : Entities)
+		for (auto& entity : Entities)
 		{
-			const auto& position = world.GetComponent<Position>(entity);
-			auto& collider = world.GetComponent<Collider>(entity);
+			const auto& position = entity.GetComponent<Position>();
+			auto& collider = entity.GetComponent<Collider>();
 
 			collider.box.x = position.pos.x;
 			collider.box.y = position.pos.y;
@@ -74,10 +74,10 @@ public:
 		}
 
 		// Теперь проверяем коллизии и меняем цвет на голубой при столкновении
-		for (const auto& entity : Entities)
+		for (auto& entity : Entities)
 		{
-			auto& renderable = world.GetComponent<Renderable>(entity);
-			auto& collider = world.GetComponent<Collider>(entity);
+			auto& renderable = entity.GetComponent<Renderable>();
+			const auto& collider = entity.GetComponent<Collider>();
 
 			for (auto [otherEntity, otherCollider, otherRenderable] : m_allCollidables->Each())
 			{
@@ -110,9 +110,9 @@ public:
 
 	void Update(ecs::Scene& world, float dt) override
 	{
-		for (const auto& entity : Entities)
+		for (auto& entity : Entities)
 		{
-			const auto& position = world.GetComponent<Position>(entity);
+			const auto& position = entity.GetComponent<Position>();
 
 			m_cameraCenter += (position.pos - m_cameraCenter) * 0.05f;
 

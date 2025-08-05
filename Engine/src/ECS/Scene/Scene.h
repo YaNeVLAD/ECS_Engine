@@ -5,7 +5,6 @@
 
 #include "../ComponentManager/ComponentManager.h"
 #include "../Entity/Entity.h"
-#include "../Entity/Signature.h"
 #include "../EntityManager/EntityManager.h"
 #include "../SystemManager/SystemManager.h"
 #include "../ViewManager/ViewManager.h"
@@ -55,7 +54,7 @@ public:
 		signature.set(TypeIdOf<_TComponent>());
 		m_entityManager->SetSignature(entity, signature);
 
-		m_systemManager->OnEntitySignatureChanged(entity, signature);
+		m_systemManager->OnEntitySignatureChanged(entity, signature, this);
 		m_viewManager->OnEntitySignatureChanged(entity, signature);
 	}
 
@@ -116,7 +115,7 @@ public:
 		{
 			m_entityManager->DestroyEntity(entity);
 			m_componentManager->OnEntityDestroyed(entity);
-			m_systemManager->OnEntitySignatureChanged(entity, {});
+			m_systemManager->OnEntitySignatureChanged(entity, {}, this);
 			m_viewManager->OnEntityDestroyed(entity);
 		}
 

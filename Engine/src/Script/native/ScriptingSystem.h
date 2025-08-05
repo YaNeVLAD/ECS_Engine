@@ -14,7 +14,7 @@ public:
 	{
 		for (const auto& entity : Entities)
 		{
-			auto& scriptComponent = scene.GetComponent<ScriptComponent>(entity);
+			auto& scriptComponent = entity.GetComponent<ScriptComponent>();
 			for (auto& script : scriptComponent.m_scripts)
 			{
 				script->OnUpdate(dt);
