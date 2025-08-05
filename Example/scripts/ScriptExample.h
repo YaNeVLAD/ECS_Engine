@@ -7,7 +7,13 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#define PROFILE 0
+#if PROFILE
 #include <tracy/Tracy.hpp>
+#else
+#define FrameMark
+#define ZoneScoped
+#endif
 
 #include "../../Engine/src/ECS/Scene/Scene.h"
 #include "../../Engine/src/Script/native/ScriptComponent.h"
@@ -93,16 +99,17 @@ private:
 class CameraSystem : public ecs::System
 {
 public:
-	// Конструктор принимает начальную позицию и ссылку на матрицу вида, которую будет обновлять
-	CameraSystem(glm::vec2 startPos, glm::mat4& viewMatrix)
+	// Добавляем ширину и высоту экрана в конструктор
+	CameraSystem(glm::vec2 startPos, glm::mat4& viewMatrix, float screenWidth, float screenHeight)
 		: m_viewMatrix(viewMatrix)
 		, m_cameraCenter(startPos)
+		, m_screenWidth(screenWidth)
+		, m_screenHeight(screenHeight)
 	{
 	}
 
 	void Update(ecs::Scene& world, float dt) override
 	{
-		ZoneScoped;
 		for (const auto& entity : Entities)
 		{
 			const auto& position = world.GetComponent<Position>(entity);
@@ -113,13 +120,19 @@ public:
 			glm::vec3 center = { m_cameraCenter.x, m_cameraCenter.y, 0.0f };
 			glm::vec3 up = { 0.0f, 1.0f, 0.0f };
 
-			m_viewMatrix = glm::lookAt(eye, center, up);
+			glm::mat4 lookAtMatrix = glm::lookAt(eye, center, up);
+
+			glm::mat4 translateMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(m_screenWidth * 0.5f, m_screenHeight * 0.5f, 0.0f));
+
+			m_viewMatrix = translateMatrix * lookAtMatrix;
 		}
 	}
 
 private:
 	glm::mat4& m_viewMatrix;
 	glm::vec2 m_cameraCenter;
+	float m_screenWidth;
+	float m_screenHeight;
 };
 
 class Renderer
@@ -146,14 +159,13 @@ public:
 		glDeleteShader(vertexShader);
 		glDeleteShader(fragmentShader);
 
-		// Геометрия квадрата (2 треугольника)
 		float vertices[] = {
-			// pos
-			0.0f, 1.0f,
-			1.0f, 0.0f,
-			0.0f, 0.0f,
-			1.0f, 1.0f
+			-0.5f, 0.5f, // Верхний левый
+			0.5f, -0.5f, // Нижний правый
+			-0.5f, -0.5f, // Нижний левый
+			0.5f, 0.5f // Верхний правый
 		};
+
 		unsigned int indices[] = {
 			0, 2, 1,
 			0, 1, 3
@@ -241,7 +253,7 @@ public:
 			return;
 		}
 		glfwMakeContextCurrent(window);
-		glfwSwapInterval(0); // v-sync on
+		glfwSwapInterval(1); // v-sync on
 
 		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 		{
@@ -297,7 +309,7 @@ public:
 		world.RegisterSystem<CollisionSystem>(world)
 			.WithRead<Collider>()
 			.WithWrite<Renderable>();
-		world.RegisterSystem<CameraSystem>(playerStartPos, viewMatrix)
+		world.RegisterSystem<CameraSystem>(playerStartPos, viewMatrix, SCREEN_WIDTH, SCREEN_HEIGHT)
 			.WithRead<Position>()
 			.WithWrite<Camera>();
 		world.RegisterSystem<ecs::ScriptingSystem>()
