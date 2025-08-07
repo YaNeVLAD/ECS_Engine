@@ -19,6 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="public\ecs.hpp" />
+    <ClInclude Include="public\physics.hpp" />
+    <ClInclude Include="public\scripts.hpp" />
     <ClInclude Include="src\ECS\EntityManager\EntityManager.h" />
     <ClInclude Include="src\ECS\ComponentManager\ComponentManager.h" />
     <ClInclude Include="src\ECS\ComponentArray\ComponentArray.h" />

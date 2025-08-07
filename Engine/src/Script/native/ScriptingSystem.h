@@ -4,7 +4,7 @@
 
 #include "../../ECS/Scene/Scene.h"
 
-namespace ecs
+namespace ecs::scripts
 {
 
 class ScriptingSystem : public System
@@ -23,4 +23,4 @@ public:
 	}
 };
 
-} // namespace ecs
+} // namespace ecs::scripts

@@ -126,5 +126,14 @@
     <ClInclude Include="src\Physics\System.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="public\ecs.hpp">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="public\physics.hpp">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="public\scripts.hpp">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

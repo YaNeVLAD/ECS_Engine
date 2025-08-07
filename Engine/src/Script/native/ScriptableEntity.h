@@ -2,7 +2,7 @@
 
 #include "../../ECS/Entity/Entity.h"
 
-namespace ecs
+namespace ecs::scripts
 {
 
 class Scene;

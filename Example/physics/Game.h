@@ -1,19 +1,20 @@
 #pragma once
 
+#define ENGINE_FOLD_NAMESPACES
+
 #include <chrono>
 #include <iostream>
 #include <random>
+#include <string>
 
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include <ECS/Scene/Scene.h>
-#include <Physics/System.h>
-#include <Script/native/ScriptComponent.h>
-#include <Script/native/ScriptingSystem.h>
-#include <string>
+#include <ecs.hpp>
+#include <physics.hpp>
+#include <scripts.hpp>
 
 #include "PlayerController.h"
 
@@ -197,6 +198,7 @@ void RunGame()
 		Input,
 		RigidBody,
 		Renderable,
+		AABBCollider,
 		ecs::ScriptComponent>();
 
 	world.RegisterSystem<PhysicsSystem>()

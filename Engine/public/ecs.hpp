@@ -1,0 +1,16 @@
+#pragma once
+
+#include "../src/ECS/ComponentArray/ComponentArray.h"
+#include "../src/ECS/ComponentArray/IComponentArray.h"
+#include "../src/ECS/ComponentManager/ComponentManager.h"
+#include "../src/ECS/Entity/Entity.h"
+#include "../src/ECS/Entity/Signature.h"
+#include "../src/ECS/EntityManager/EntityManager.h"
+#include "../src/ECS/EntityWrapper/EntityWrapper.h"
+#include "../src/ECS/Scene/Scene.h"
+#include "../src/ECS/System/System.h"
+#include "../src/ECS/SystemManager/SystemManager.h"
+#include "../src/ECS/View/IView.h"
+#include "../src/ECS/View/Iterator/ViewIterator.h"
+#include "../src/ECS/View/View.h"
+#include "../src/ECS/ViewManager/ViewManager.h"
