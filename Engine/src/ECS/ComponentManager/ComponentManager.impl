@@ -1,0 +1,71 @@
+#include "ComponentManager.h"
+namespace ecs
+{
+
+template <typename _TComponent>
+inline void ComponentManager::RegisterComponent()
+{
+	ComponentType componentType = TypeIdOf<_TComponent>();
+
+	assert(!m_componentArrays.contains(componentType)
+		&& "Can't register the same component more than once");
+
+	m_componentArrays[componentType] = std::make_shared<ComponentArray<_TComponent>>();
+}
+
+template <typename _TComponent>
+inline bool ComponentManager::IsComponentRegistered()
+{
+	return m_componentArrays.contains(TypeIdOf<_TComponent>());
+}
+
+template <typename _TComponent>
+inline void ComponentManager::AddComponent(Entity entity, _TComponent const& component)
+{
+	GetComponentArray<_TComponent>()->AddComponent(entity, component);
+}
+
+template <typename _TComponent>
+inline void ComponentManager::RemoveComponent(Entity entity)
+{
+	GetComponentArray<_TComponent>()->RemoveComponent(entity);
+}
+
+template <typename _TComponent>
+inline _TComponent& ComponentManager::GetComponent(Entity entity)
+{
+	return GetComponentArray<_TComponent>()->GetComponent(entity);
+}
+
+template <typename _TComponent>
+inline _TComponent const& ComponentManager::GetComponent(Entity entity) const
+{
+	return GetComponentArray<_TComponent>()->GetComponent(entity);
+}
+
+template <typename _TComponent>
+inline bool ComponentManager::HasComponent(Entity entity) const
+{
+	return GetComponentArray<_TComponent>()->HasComponent(entity);
+}
+
+inline void ComponentManager::OnEntityDestroyed(Entity entity)
+{
+	for (auto const& [type, array] : m_componentArrays)
+	{
+		array->OnEntityDestroyed(entity);
+	}
+}
+
+template <typename _TComponent>
+inline std::shared_ptr<ComponentArray<_TComponent>> ComponentManager::GetComponentArray() const
+{
+	ComponentType componentType = TypeIdOf<_TComponent>();
+
+	assert(m_componentArrays.contains(componentType)
+		&& "Component is not registered");
+
+	return std::static_pointer_cast<ComponentArray<_TComponent>>(m_componentArrays.at(componentType));
+}
+
+}

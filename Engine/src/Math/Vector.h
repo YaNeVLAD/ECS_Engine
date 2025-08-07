@@ -8,7 +8,8 @@ namespace ecs::math
 
 struct Vector2
 {
-	float X = 0.0f, Y = 0.0f;
+	float X = 0.0f;
+	float Y = 0.0f;
 
 	Vector2& operator+=(Vector2 const& rhs)
 	{

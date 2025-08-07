@@ -216,7 +216,7 @@ void RunGame()
 	std::uniform_real_distribution<float> vel_dist(-100.f, 100.f);
 	std::uniform_real_distribution<float> mass_dist(100.f, 300.f);
 
-	for (int i = 0; i < 5; ++i)
+	for (int i = 0; i < ENTITY_COUNT; ++i)
 	{
 		glm::vec2 size = { 50.f, 50.f };
 		ecs::math::Vector2 size2 = { 50.f, 50.f };

@@ -47,7 +47,9 @@ struct AABBCollider
 
 struct CollisionManifold
 {
-	Entity EntityA, EntityB = InvalidEntity;
+	Entity EntityA = InvalidEntity;
+	Entity EntityB = InvalidEntity;
+
 	math::Vector2 Normal;
 	float Penetration = 0.f;
 };

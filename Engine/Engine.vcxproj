@@ -58,6 +58,12 @@
     <ClInclude Include="src\Types\SimpleType.h" />
     <ClInclude Include="src\Types\Types.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="src\ECS\ComponentArray\ComponentArray.impl" />
+    <None Include="src\ECS\ComponentManager\ComponentManager.impl" />
+    <None Include="src\ECS\EntityManager\EntityManager.impl" />
+    <None Include="src\ECS\SystemManager\SystemManager.impl" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>

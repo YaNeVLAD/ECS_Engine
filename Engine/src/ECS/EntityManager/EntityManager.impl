@@ -1,0 +1,73 @@
+#include "EntityManager.h"
+namespace ecs
+{
+
+[[nodiscard]] inline Entity ecs::EntityManager::CreateEntity()
+{
+	Entity entity;
+
+	if (!m_availableEntities.empty())
+	{
+		entity = m_availableEntities.front();
+		m_availableEntities.pop();
+	}
+	else
+	{
+		entity = m_nextEntity++;
+	}
+
+	if (entity >= m_signatures.size())
+	{
+		m_signatures.resize(entity + 1);
+		m_entityLocations.resize(entity + 1);
+	}
+
+	m_signatures[entity].reset();
+
+	m_activeEntities.push_back(entity);
+	m_entityLocations[entity] = m_activeEntities.size() - 1;
+
+	return entity;
+}
+
+inline void EntityManager::DestroyEntity(Entity entity)
+{
+	assert(entity < m_nextEntity && "Entity out of range");
+
+	size_t indexOfRemoved = m_entityLocations[entity];
+
+	Entity lastEntity = m_activeEntities.back();
+
+	m_activeEntities[indexOfRemoved] = lastEntity;
+
+	m_entityLocations[lastEntity] = indexOfRemoved;
+
+	m_activeEntities.pop_back();
+
+	m_signatures[entity].reset();
+	m_availableEntities.push(entity);
+}
+
+inline void EntityManager::SetSignature(Entity entity, Signature const& signature)
+{
+	assert(entity < m_nextEntity && "Entity out of range");
+	m_signatures[entity] = signature;
+}
+
+inline Signature& EntityManager::GetSignature(Entity entity)
+{
+	assert(entity < m_nextEntity && "Entity out of range");
+	return m_signatures[entity];
+}
+
+inline Signature const& EntityManager::GetSignature(Entity entity) const
+{
+	return const_cast<EntityManager&>(*this).GetSignature(entity);
+}
+
+[[nodiscard]] inline std::vector<Entity> const& EntityManager::GetActiveEntities() const
+{
+	return m_activeEntities;
+}
+
+}

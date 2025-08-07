@@ -10,7 +10,7 @@ namespace ecs::scripts
 class ScriptingSystem : public System
 {
 public:
-	void Update(ecs::Scene& scene, float dt) override
+	void Update(ecs::Scene&, float dt) override
 	{
 		for (const auto& entity : Entities)
 		{

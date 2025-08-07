@@ -22,7 +22,7 @@ public:
 		std::cout << "PlayerController created for entity " << Entity() << std::endl;
 	}
 
-	void OnUpdate(float dt) override
+	void OnUpdate(float) override
 	{
 		auto& body = GetComponent<ecs::physics::components::RigidBody>();
 		const auto& input = GetComponent<Input>();

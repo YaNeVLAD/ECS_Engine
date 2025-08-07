@@ -136,4 +136,10 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="src\ECS\ComponentArray\ComponentArray.impl" />
+    <None Include="src\ECS\ComponentManager\ComponentManager.impl" />
+    <None Include="src\ECS\EntityManager\EntityManager.impl" />
+    <None Include="src\ECS\SystemManager\SystemManager.impl" />
+  </ItemGroup>
 </Project>
