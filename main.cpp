@@ -6,7 +6,8 @@
 
 #include "Engine/src/ECS/Scene/Scene.h"
 
-#include "Example/scripts/ScriptExample.h"
+// #include "Example/scripts/ScriptExample.h"
+#include "Example/physics/Game.h"
 
 #include "Engine/src/Types/Types.h"
 
@@ -286,8 +287,7 @@ int main()
 	}
 #endif
 
-	Game game;
-	game.Run();
+	RunGame();
 
 	return 0;
 }

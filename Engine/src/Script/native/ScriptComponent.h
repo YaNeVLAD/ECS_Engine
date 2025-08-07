@@ -39,4 +39,14 @@ private:
 	friend class ScriptingSystem;
 };
 
+template <typename _TScript>
+void Bind(ecs::Scene& scene, ecs::Entity entity)
+{
+	if (scene.IsRegistered<ecs::ScriptComponent>())
+	{
+		scene.GetComponent<ecs::ScriptComponent>(entity)
+			.Bind<_TScript>(scene, entity);
+	}
+}
+
 } // namespace ecs

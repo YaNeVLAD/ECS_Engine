@@ -45,17 +45,28 @@ public:
 		(m_componentManager->RegisterComponent<_TComponents>(), ...);
 	}
 
+	template <typename _T>
+	bool IsRegistered()
+	{
+		if constexpr (std::is_base_of_v<System, _T>)
+		{
+			return m_systemManager->IsSystemRegistered<_T>();
+		}
+
+		return m_componentManager->IsComponentRegistered<_T>();
+	}
+
 	template <typename _TComponent>
 	void AddComponent(Entity entity, _TComponent const& component)
 	{
-		m_componentManager->AddComponent(entity, component);
+		AddComponentImpl(entity, component);
+	}
 
-		auto& signature = m_entityManager->GetSignature(entity);
-		signature.set(TypeIdOf<_TComponent>());
-		m_entityManager->SetSignature(entity, signature);
-
-		m_systemManager->OnEntitySignatureChanged(entity, signature, this);
-		m_viewManager->OnEntitySignatureChanged(entity, signature);
+	template <typename _TComponent, typename... _TArgs>
+	void AddComponent(Entity entity, _TArgs&&... args)
+	{
+		auto component = _TComponent{ std::forward<_TArgs>(args)... };
+		AddComponentImpl(entity, std::move(component));
 	}
 
 	template <typename _TComponent>
@@ -67,11 +78,17 @@ public:
 		signature.set(TypeIdOf<_TComponent>());
 		m_entityManager->SetSignature(entity, signature);
 
-		m_systemManager->OnEntitySignatureChanged(entity, signature);
+		m_systemManager->OnEntitySignatureChanged(entity, signature, this);
 	}
 
 	template <typename _TComponent>
 	_TComponent& GetComponent(Entity entity)
+	{
+		return m_componentManager->GetComponent<_TComponent>(entity);
+	}
+
+	template <typename _TComponent>
+	_TComponent const& GetComponent(Entity entity) const
 	{
 		return m_componentManager->GetComponent<_TComponent>(entity);
 	}
@@ -89,7 +106,7 @@ public:
 	}
 
 	template <typename _TSystem>
-	_TSystem& GetSystem()
+	_TSystem& GetSystem() const
 	{
 		return m_systemManager->GetSystem<_TSystem>();
 	}
@@ -104,7 +121,7 @@ public:
 		m_systemManager->Execute(*this, dt);
 	}
 
-	ComponentManager& GetComponentManager()
+	ComponentManager& GetComponentManager() const
 	{
 		return *m_componentManager;
 	}
@@ -126,6 +143,20 @@ public:
 	auto CreateView()
 	{
 		return m_viewManager->CreateView<_TComponents...>(*m_componentManager, *m_entityManager);
+	}
+
+private:
+	template <typename _TComponent>
+	void AddComponentImpl(Entity entity, _TComponent component)
+	{
+		m_componentManager->AddComponent(entity, component);
+
+		auto& signature = m_entityManager->GetSignature(entity);
+		signature.set(TypeIdOf<_TComponent>());
+		m_entityManager->SetSignature(entity, signature);
+
+		m_systemManager->OnEntitySignatureChanged(entity, signature, this);
+		m_viewManager->OnEntitySignatureChanged(entity, signature);
 	}
 
 private:

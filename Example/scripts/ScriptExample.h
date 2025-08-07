@@ -1,6 +1,8 @@
 #pragma once
 
+#include <chrono>
 #include <random>
+#include <string>
 
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
@@ -15,9 +17,9 @@
 #define ZoneScoped
 #endif
 
-#include "../../Engine/src/ECS/Scene/Scene.h"
-#include "../../Engine/src/Script/native/ScriptComponent.h"
-#include "../../Engine/src/Script/native/ScriptingSystem.h"
+#include <ECS/Scene/Scene.h>
+#include <Script/native/ScriptComponent.h>
+#include <Script/native/ScriptingSystem.h>
 
 #include "Components.h"
 #include "PlayerController.h"
@@ -318,14 +320,14 @@ public:
 
 		// --- Создание сущностей ---
 		ecs::Entity playerEntity = world.CreateEntity();
-		world.AddComponent<Position>(playerEntity, { playerStartPos });
-		world.AddComponent<Velocity>(playerEntity, {});
-		world.AddComponent<Renderable>(playerEntity, { { 50.f, 50.f }, { 0.f, 1.f, 0.f, 1.f } }); // Green
-		world.AddComponent<Input>(playerEntity, {});
-		world.AddComponent<Camera>(playerEntity, {});
-		world.AddComponent<Collider>(playerEntity, { { playerStartPos.x, playerStartPos.y, 50.f, 50.f } });
-		world.AddComponent<ecs::ScriptComponent>(playerEntity, {});
-		world.GetComponent<ecs::ScriptComponent>(playerEntity).Bind<PlayerController>(world, playerEntity);
+		world.AddComponent<Position>(playerEntity, playerStartPos);
+		world.AddComponent<Velocity>(playerEntity);
+		world.AddComponent<Renderable>(playerEntity, { { 50.f, 50.f }, { 0.f, 1.f, 0.f, 1.f } });
+		world.AddComponent<Input>(playerEntity);
+		world.AddComponent<Camera>(playerEntity);
+		world.AddComponent<Collider>(playerEntity, { playerStartPos.x, playerStartPos.y, 50.f, 50.f });
+		world.AddComponent<ecs::ScriptComponent>(playerEntity);
+		ecs::Bind<PlayerController>(world, playerEntity);
 
 		std::mt19937 rng(std::random_device{}());
 		std::uniform_real_distribution<float> pos_dist(300.f, 1000.f);
@@ -335,7 +337,7 @@ public:
 			float y = pos_dist(rng);
 			auto entity = world.CreateEntity();
 			world.AddComponent<Position>(entity, { { x, y } });
-			world.AddComponent<Renderable>(entity, { { 50.f, 50.f }, { 1.f, 0.f, 0.f, 1.f } }); // Red
+			world.AddComponent<Renderable>(entity, { { 50.f, 50.f }, { 1.f, 0.f, 0.f, 1.f } });
 			world.AddComponent<Collider>(entity, { { x, y, 50.f, 50.f } });
 		}
 

@@ -54,7 +54,7 @@ public:
 	}
 
 	template <typename _TComponent>
-	bool HasComponent()
+	bool HasComponent() const
 	{
 		return m_scene->HasComponent<_TComponent>(m_id);
 	}

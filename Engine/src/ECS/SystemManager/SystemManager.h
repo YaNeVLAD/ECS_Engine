@@ -34,6 +34,12 @@ public:
 		return *this;
 	}
 
+	template <typename _TSystem>
+	bool IsSystemRegistered()
+	{
+		return m_systems.contains(TypeIdOf<_TSystem>());
+	}
+
 	template <typename... _TComponents>
 	SystemManager& WithRead()
 	{
@@ -63,7 +69,7 @@ public:
 	}
 
 	template <typename _TSystem>
-	_TSystem& GetSystem()
+	_TSystem& GetSystem() const
 	{
 		SystemId systemId = TypeIdOf<_TSystem>();
 		assert(m_systems.contains(systemId)

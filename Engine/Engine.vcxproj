@@ -43,6 +43,9 @@
     <ClInclude Include="src\ECS\View\Iterator\ViewIterator.h" />
     <ClInclude Include="src\ECS\View\View.h" />
     <ClInclude Include="src\ECS\ViewManager\ViewManager.h" />
+    <ClInclude Include="src\Math\Vector.h" />
+    <ClInclude Include="src\Physics\Components.h" />
+    <ClInclude Include="src\Physics\System.h" />
     <ClInclude Include="src\Script\common\ScriptableEntity.h" />
     <ClInclude Include="src\Script\common\ScriptComponent.h" />
     <ClInclude Include="src\Script\common\ScriptingSystem.h" />

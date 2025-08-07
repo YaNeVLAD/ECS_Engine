@@ -26,6 +26,12 @@ public:
 	}
 
 	template <typename _TComponent>
+	bool IsComponentRegistered()
+	{
+		return m_componentArrays.contains(TypeIdOf<_TComponent>());
+	}
+
+	template <typename _TComponent>
 	void AddComponent(Entity entity, _TComponent const& component)
 	{
 		GetComponentArray<_TComponent>()->AddComponent(entity, component);
