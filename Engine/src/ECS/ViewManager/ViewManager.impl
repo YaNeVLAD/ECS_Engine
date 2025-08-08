@@ -1,0 +1,54 @@
+#include "ViewManager.h"
+namespace ecs
+{
+
+template <typename... _TComponents>
+inline std::shared_ptr<View<_TComponents...>> ViewManager::CreateView(
+	ComponentManager& componentManager, EntityManager const& entityManager)
+{
+	Signature signature = CreateSignature<_TComponents...>();
+
+	if (m_views.contains(signature))
+	{
+		return std::dynamic_pointer_cast<View<_TComponents...>>(m_views.at(signature));
+	}
+
+	auto view = std::make_shared<View<_TComponents...>>(componentManager, signature);
+
+	for (Entity entity : entityManager.GetActiveEntities())
+	{
+		if ((entityManager.GetSignature(entity) & signature) == signature)
+		{
+			view->AddEntity(entity);
+		}
+	}
+
+	m_views[signature] = view;
+	return view;
+}
+
+inline void ecs::ViewManager::OnEntityDestroyed(Entity entity)
+{
+	for (auto const& [_, view] : m_views)
+	{
+		view->OnEntityDestroyed(entity);
+	}
+}
+
+inline void ViewManager::OnEntitySignatureChanged(Entity entity, Signature signature)
+{
+	for (auto const& [_, view] : m_views)
+	{
+		view->OnEntitySignatureChanged(entity, signature);
+	}
+}
+
+template <typename... _TComponents>
+inline Signature ViewManager::CreateSignature()
+{
+	Signature signature;
+	(signature.set(TypeIdOf<_TComponents>()), ...);
+	return signature;
+}
+
+}

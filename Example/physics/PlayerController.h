@@ -14,7 +14,7 @@ struct Input
 	bool moveDown = false;
 };
 
-class PlayerController : public ecs::ScriptableEntity
+class PlayerController : public ecs::scripts::ScriptableEntity
 {
 public:
 	void OnCreate() override

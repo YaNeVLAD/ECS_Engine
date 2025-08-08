@@ -2,11 +2,11 @@
 
 #include <iostream>
 
-#include "../../Engine/src/Script/native/ScriptableEntity.h"
+#include <scripts.hpp>
 
 #include "Components.h"
 
-class PlayerController : public ecs::ScriptableEntity
+class PlayerController : public ecs::scripts::ScriptableEntity
 {
 public:
 	void OnCreate() override

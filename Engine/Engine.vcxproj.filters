@@ -141,5 +141,6 @@
     <None Include="src\ECS\ComponentManager\ComponentManager.impl" />
     <None Include="src\ECS\EntityManager\EntityManager.impl" />
     <None Include="src\ECS\SystemManager\SystemManager.impl" />
+    <None Include="src\ECS\ViewManager\ViewManager.impl" />
   </ItemGroup>
 </Project>
