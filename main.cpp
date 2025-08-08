@@ -2,16 +2,25 @@
 #include <numeric>
 #include <random>
 
+#include <SFML/Graphics.hpp>
+
+#define ENTT 0
+
+#if ENTT
+#include "Example/entt/Scene.h"
+#else
+#include <ecs.hpp>
+#endif
+
 #include "Timer.h"
 
-#include "Engine/src/ECS/Scene/Scene.h"
+namespace ecs
+{
+}
 
-// #include "Example/scripts/ScriptExample.h"
-#include "Example/physics/Game.h"
+using namespace ecs;
 
-#include "Engine/src/Types/Types.h"
-
-#define BENCHMARK_ON 0
+#define BENCHMARK_ON 1
 
 #if BENCHMARK_ON
 struct Transform
@@ -40,11 +49,6 @@ struct Renderable
 	sf::RectangleShape rect;
 };
 
-struct Window
-{
-	sf::RenderWindow* window;
-};
-
 struct Health
 {
 	int value = 100;
@@ -56,19 +60,25 @@ struct Damage
 
 std::unordered_map<const char*, long long> g_system_timings;
 
-class PhysicsSystem : public ecs::System
+class PhysicsSystem : public System
 {
 public:
-	void Update(ecs::Scene& world, float dt) override
+	void Update(Scene& scene, float dt) override
 	{
+#if ENTT
+		auto Entities = scene.CreateView<Transform, Velocity, RigidBody>();
+#else
+		auto& Entities = *scene.CreateView<Transform, Velocity, RigidBody>();
+#endif
+
 		auto start = std::chrono::high_resolution_clock::now();
 
-		for (const auto& entity : Entities)
+#if ENTT
+		for (auto [entity, transform, velocity, body] : Entities.each())
+#else
+		for (auto&& [entity, transform, velocity, body] : Entities)
+#endif
 		{
-			auto& transform = world.GetComponent<Transform>(entity);
-			const auto& velocity = world.GetComponent<Velocity>(entity);
-			const auto& body = world.GetComponent<RigidBody>(entity);
-
 			transform.x += velocity.dx * dt;
 			transform.y += velocity.dy * dt;
 			transform.z += velocity.dz * dt * std::sin(body.mass);
@@ -79,19 +89,27 @@ public:
 	}
 };
 
-class DamageSystem : public ecs::System
+class DamageSystem : public System
 {
 public:
-	void Update(ecs::Scene& world, float dt) override
+	void Update(Scene& world, float dt) override
 	{
+#if ENTT
+		auto Entities = world.CreateView<Health, Damage>();
+#else
+		auto& Entities = *world.CreateView<Health, Damage>();
+#endif
+
 		auto type = typeid(DamageSystem).name();
 
 		auto start = std::chrono::high_resolution_clock::now();
 
-		for (const auto& entity : Entities)
+#if ENTT
+		for (auto [entity, health, damage] : Entities.each())
+#else
+		for (auto&& [entity, health, damage] : Entities)
+#endif
 		{
-			auto& health = world.GetComponent<Health>(entity);
-			const auto& damage = world.GetComponent<Damage>(entity);
 			if (damage.amount > 0)
 			{
 				health.value -= damage.amount;
@@ -112,17 +130,28 @@ struct DrawData
 	float x, y;
 };
 
-class RenderDataSystem : public ecs::System
+class RenderDataSystem : public System
 {
 public:
-	void Update(ecs::Scene& world, float dt) override
+	void Update(Scene& world, float dt) override
 	{
-		m_drawData.clear();
-		m_drawData.reserve(Entities.size());
+#if ENTT
+		auto Entities = world.CreateView<Transform>();
+#else
+		auto& Entities = *world.CreateView<Transform>();
+#endif
 
-		for (const auto& entity : Entities)
+		m_drawData.clear();
+#if ENTT
+		m_drawData.reserve(Entities.size());
+#endif
+
+#if ENTT
+		for (const auto& [entity, transform] : Entities.each())
+#else
+		for (auto&& [entity, transform] : Entities)
+#endif
 		{
-			auto const& transform = world.GetComponent<Transform>(entity);
 			m_drawData.emplace_back(transform.x, transform.y);
 		}
 	}
@@ -149,7 +178,7 @@ public:
 		for (const auto& data : renderDataSystem.GetDrawData())
 		{
 			rect.setPosition(data.x, data.y);
-			window.draw(rect);
+			// window.draw(rect);
 		}
 
 		window.display();
@@ -169,7 +198,7 @@ int main()
 	std::cout << "Duration: " << BENCHMARK_SECONDS << " seconds" << std::endl;
 	std::cout << "_____________________" << std::endl;
 
-	ecs::Scene world;
+	Scene world;
 
 	{
 		Timer timer("Setup: Registering components and systems");
@@ -181,18 +210,18 @@ int main()
 		world.RegisterComponent<Health>();
 		world.RegisterComponent<Damage>();
 
-		world.RegisterSystem<PhysicsSystem>()
-			.WithRead<Velocity>()
-			.WithRead<RigidBody>()
-			.WithWrite<Transform>();
+		world.RegisterSystem<PhysicsSystem>();
+		//.WithRead<Velocity>()
+		//.WithRead<RigidBody>()
+		//.WithWrite<Transform>();
 
-		world.RegisterSystem<DamageSystem>()
-			.WithRead<Damage>()
-			.WithWrite<Health>();
+		world.RegisterSystem<DamageSystem>();
+		//.WithRead<Damage>()
+		//.WithWrite<Health>();
 
-		world.RegisterSystem<RenderDataSystem>()
-			.WithRead<Transform>()
-			.WithRead<Renderable>();
+		world.RegisterSystem<RenderDataSystem>();
+		//.WithRead<Transform>()
+		//.WithRead<Renderable>();
 
 		world.BuildSystemGraph();
 	}
@@ -205,7 +234,7 @@ int main()
 
 		for (int i = 0; i < ENTITY_COUNT; ++i)
 		{
-			ecs::Entity entity = world.CreateEntity();
+			Entity entity = world.CreateEntity();
 			world.AddComponent<Transform>(entity, { dist(rng), dist(rng), dist(rng) });
 			world.AddComponent<Velocity>(entity, { dist(rng), dist(rng), dist(rng) });
 			world.AddComponent<RigidBody>(entity, { dist(rng) / 100.0 });
@@ -286,8 +315,6 @@ int main()
 		std::cout << "   Contribution: " << percentage << "%\n";
 	}
 #endif
-
-	RunGame();
 
 	return 0;
 }
