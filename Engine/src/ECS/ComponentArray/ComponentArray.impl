@@ -4,50 +4,58 @@ namespace ecs
 template <typename _TComponent>
 inline void ComponentArray<_TComponent>::AddComponent(Entity entity, _TComponent const& component)
 {
-	assert(!m_entityToIndex.contains(entity)
-		&& "Can't add multiple components of the same type");
+	assert(!HasComponent(entity) && "Component already exists for this entity");
 
-	ComponentIndex newIndex = m_components.size();
-	m_entityToIndex[entity] = newIndex;
-	m_indexToEntity[newIndex] = entity;
+	const auto index = entity.Index();
 
+	if (index >= m_sparse.size())
+	{
+		m_sparse.resize(index + 1, InvalidIndex);
+	}
+
+	const size_t denseIndex = m_components.size();
+	m_sparse[index] = denseIndex;
+	m_denseToEntity.push_back(entity);
 	m_components.push_back(component);
 }
 
 template <typename _TComponent>
 inline void ComponentArray<_TComponent>::RemoveComponent(Entity entity)
 {
-	assert(m_entityToIndex.contains(entity)
-		&& "Entity does not have component to remove");
+	if (!HasComponent(entity))
+	{
+		return;
+	}
 
-	size_t removedIndex = m_entityToIndex.at(entity);
-	size_t lastIndex = m_components.size() - 1;
+	const auto indexToRemove = entity.Index();
+	const size_t denseIndexOfRemoved = m_sparse[indexToRemove];
+
+	_TComponent& lastComponent = m_components.back();
+	Entity lastEntity = m_denseToEntity.back();
 
 	if constexpr (std::movable<_TComponent>)
 	{
-		m_components[removedIndex] = std::move(m_components[lastIndex]);
+		m_components[denseIndexOfRemoved] = std::move(lastComponent);
 	}
 	else
 	{
-		m_components[removedIndex] = m_components[lastIndex];
+		m_components[denseIndexOfRemoved] = lastComponent;
 	}
+	m_denseToEntity[denseIndexOfRemoved] = lastEntity;
 
-	Entity lastEntity = m_indexToEntity.at(lastIndex);
-	m_entityToIndex[lastEntity] = removedIndex;
-	m_indexToEntity[removedIndex] = lastEntity;
+	m_sparse[lastEntity.Index()] = denseIndexOfRemoved;
 
-	m_entityToIndex.erase(entity);
-	m_indexToEntity.erase(lastEntity);
+	m_sparse[indexToRemove] = InvalidIndex;
+
 	m_components.pop_back();
+	m_denseToEntity.pop_back();
 }
 
 template <typename _TComponent>
 inline _TComponent& ComponentArray<_TComponent>::GetComponent(Entity entity)
 {
-	assert(m_entityToIndex.contains(entity)
-		&& "Entity does not have component of this type");
-
-	return m_components[m_entityToIndex.at(entity)];
+	assert(HasComponent(entity) && "Entity does not have component of this type");
+	return m_components[m_sparse[entity.Index()]];
 }
 
 template <typename _TComponent>
@@ -59,28 +67,25 @@ inline _TComponent const& ComponentArray<_TComponent>::GetComponent(Entity entit
 template <typename _TComponent>
 inline bool ComponentArray<_TComponent>::HasComponent(Entity entity) const
 {
-	return m_entityToIndex.contains(entity);
+	const auto index = entity.Index();
+	return index < m_sparse.size()
+		&& m_sparse[index] != InvalidIndex
+		&& m_denseToEntity[m_sparse[index]] == entity;
 }
 
 template <typename _TComponent>
-inline auto ComponentArray<_TComponent>::GetComponents()
+inline std::vector<_TComponent>& ComponentArray<_TComponent>::GetComponents()
 {
-	return std::views::all(m_components);
-}
-
-template <typename _TComponent>
-inline auto ComponentArray<_TComponent>::GetComponents() const
-{
-	return std::views::all(m_components);
+	return m_components;
 }
 
 template <typename _TComponent>
 inline void ComponentArray<_TComponent>::OnEntityDestroyed(Entity entity)
 {
-	if (m_entityToIndex.contains(entity))
+	if (HasComponent(entity))
 	{
 		RemoveComponent(entity);
 	}
 }
 
-}
+} // namespace ecs

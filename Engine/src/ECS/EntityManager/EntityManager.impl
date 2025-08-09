@@ -2,62 +2,75 @@
 namespace ecs
 {
 
-[[nodiscard]] inline Entity ecs::EntityManager::CreateEntity()
+[[nodiscard]] inline Entity EntityManager::CreateEntity()
 {
-	Entity entity;
+	std::size_t index;
 
-	if (!m_availableEntities.empty())
+	if (!m_availableIndices.empty())
 	{
-		entity = m_availableEntities.front();
-		m_availableEntities.pop();
+		index = m_availableIndices.front();
+		m_availableIndices.pop();
 	}
 	else
 	{
-		entity = m_nextEntity++;
+		index = m_nextEntityIndex++;
 	}
 
-	if (entity >= m_signatures.size())
+	if (index >= m_generations.size())
 	{
-		m_signatures.resize(entity + 1);
-		m_entityLocations.resize(entity + 1);
+		m_generations.resize(index + 1, 0);
+		m_signatures.resize(index + 1);
+		m_entityLocations.resize(index + 1);
 	}
 
-	m_signatures[entity].reset();
+	Entity entity = ecs::CreateEntity(index, m_generations[index]);
+
+	m_signatures[entity.Index()].reset();
 
 	m_activeEntities.push_back(entity);
-	m_entityLocations[entity] = m_activeEntities.size() - 1;
+	m_entityLocations[entity.Index()] = m_activeEntities.size() - 1;
 
 	return entity;
 }
 
 inline void EntityManager::DestroyEntity(Entity entity)
 {
-	assert(entity < m_nextEntity && "Entity out of range");
+	if (!IsValid(entity))
+	{
+		return;
+	}
 
-	size_t indexOfRemoved = m_entityLocations[entity];
+	const std::size_t index = entity.Index();
 
+	m_generations[index]++;
+
+	size_t indexOfRemoved = m_entityLocations[index];
 	Entity lastEntity = m_activeEntities.back();
 
 	m_activeEntities[indexOfRemoved] = lastEntity;
-
-	m_entityLocations[lastEntity] = indexOfRemoved;
-
+	m_entityLocations[lastEntity.Index()] = indexOfRemoved;
 	m_activeEntities.pop_back();
 
-	m_signatures[entity].reset();
-	m_availableEntities.push(entity);
+	m_signatures[index].reset();
+	m_availableIndices.push(index);
+}
+
+inline bool EntityManager::IsValid(Entity entity) const
+{
+	const auto index = entity.Index();
+	return index < m_generations.size() && entity.Generation() == m_generations[index];
 }
 
 inline void EntityManager::SetSignature(Entity entity, Signature const& signature)
 {
-	assert(entity < m_nextEntity && "Entity out of range");
-	m_signatures[entity] = signature;
+	assert(IsValid(entity) && "Entity is not valid");
+	m_signatures[entity.Index()] = signature;
 }
 
 inline Signature& EntityManager::GetSignature(Entity entity)
 {
-	assert(entity < m_nextEntity && "Entity out of range");
-	return m_signatures[entity];
+	assert(IsValid(entity) && "Entity is not valid");
+	return m_signatures[entity.Index()];
 }
 
 inline Signature const& EntityManager::GetSignature(Entity entity) const

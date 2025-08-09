@@ -137,10 +137,10 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="src\ECS\ComponentArray\ComponentArray.impl" />
     <None Include="src\ECS\ComponentManager\ComponentManager.impl" />
     <None Include="src\ECS\EntityManager\EntityManager.impl" />
     <None Include="src\ECS\SystemManager\SystemManager.impl" />
     <None Include="src\ECS\ViewManager\ViewManager.impl" />
+    <None Include="src\ECS\ComponentArray\ComponentArray.impl" />
   </ItemGroup>
 </Project>

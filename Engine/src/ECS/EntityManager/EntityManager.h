@@ -26,8 +26,14 @@ public:
 	[[nodiscard]] std::vector<Entity> const& GetActiveEntities() const;
 
 private:
-	Entity m_nextEntity = 0;
-	std::queue<Entity> m_availableEntities;
+	bool IsValid(Entity entity) const;
+
+private:
+	IdType m_nextEntityIndex = 0;
+	std::queue<IdType> m_availableIndices;
+
+	std::vector<IdType> m_generations;
+
 	std::vector<Signature> m_signatures;
 
 	std::vector<Entity> m_activeEntities;
