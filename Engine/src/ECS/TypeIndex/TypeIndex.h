@@ -2,30 +2,30 @@
 
 #include <cstddef>
 
-namespace ecs
-{
-
-using TypeIndexType = std::size_t;
-
-namespace details
+namespace Engine::ecs::details
 {
 
 class TypeIndexGenerator final
 {
 public:
 	template <typename _T>
-	static TypeIndexType Get()
+	static std::size_t Get()
 	{
-		static const TypeIndexType id = m_counter++;
+		static const std::size_t id = m_counter++;
 
 		return id;
 	}
 
 private:
-	inline static TypeIndexType m_counter = 0;
+	inline static std::size_t m_counter = 0;
 };
 
-} // namespace details
+} // namespace Engine::ecs::details
+
+namespace Engine::ecs
+{
+
+using TypeIndexType = std::size_t;
 
 template <typename _T>
 TypeIndexType TypeIndex()
@@ -39,4 +39,4 @@ const char* Name()
 	return typeid(_T).name();
 }
 
-} // namespace ecs
+} // namespace Engine::ecs

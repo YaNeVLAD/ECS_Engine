@@ -2,7 +2,7 @@
 
 #include "../Entity/Entity.h"
 
-namespace ecs
+namespace Engine::ecs
 {
 
 class IComponentArray
@@ -12,4 +12,4 @@ public:
 	virtual void OnEntityDestroyed(Entity entity) = 0;
 };
 
-} // namespace ecs
+} // namespace Engine::ecs

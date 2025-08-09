@@ -14,7 +14,7 @@ struct Input
 	bool moveDown = false;
 };
 
-class PlayerController : public ecs::scripts::ScriptableEntity
+class PlayerController : public Engine::scripts::ScriptableEntity
 {
 public:
 	void OnCreate() override
@@ -24,7 +24,7 @@ public:
 
 	void OnUpdate(float) override
 	{
-		auto& body = GetComponent<ecs::physics::components::RigidBody>();
+		auto& body = GetComponent<Engine::physics::components::RigidBody>();
 		const auto& input = GetComponent<Input>();
 
 		body.Velocity.X = 0.f;

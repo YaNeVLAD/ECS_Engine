@@ -5,7 +5,7 @@
 
 #include "Components.h"
 
-namespace ecs::physics
+namespace Engine::physics
 {
 
 class PhysicsSystem : public ecs::System
@@ -13,8 +13,8 @@ class PhysicsSystem : public ecs::System
 public:
 	void Update(ecs::Scene& scene, float dt) override
 	{
-		using namespace ecs::math;
-		using namespace ecs::physics::components;
+		using namespace math;
+		using namespace physics::components;
 
 		for (auto& entity : Entities)
 		{
@@ -57,8 +57,8 @@ private:
 		ecs::System::WrappedEntity const& entityA,
 		ecs::System::WrappedEntity const& entityB)
 	{
-		using namespace ecs::math;
-		using namespace ecs::physics::components;
+		using namespace math;
+		using namespace physics::components;
 
 		const auto& trA = entityA.GetComponent<Transform>();
 		const auto& trB = entityB.GetComponent<Transform>();
@@ -88,8 +88,8 @@ private:
 
 	void ResolveCollision(ecs::Scene& world, components::CollisionManifold const& manifold)
 	{
-		using namespace ecs::math;
-		using namespace ecs::physics::components;
+		using namespace math;
+		using namespace physics::components;
 
 		auto& rbA = world.GetComponent<RigidBody>(manifold.EntityA);
 		auto& rbB = world.GetComponent<RigidBody>(manifold.EntityB);
@@ -124,4 +124,4 @@ private:
 	}
 };
 
-} // namespace ecs::physics
+} // namespace Engine::physics

@@ -7,7 +7,7 @@
 #include "../ComponentArray/ComponentArray.h"
 #include "../TypeIndex/TypeIndex.h"
 
-namespace ecs
+namespace Engine::ecs
 {
 using ComponentType = TypeIndexType;
 
@@ -44,6 +44,6 @@ private:
 	std::shared_ptr<ComponentArray<_TComponent>> GetComponentArray() const;
 };
 
-} // namespace ecs
+} // namespace Engine::ecs
 
 #include "ComponentManager.impl"

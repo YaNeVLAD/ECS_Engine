@@ -3,7 +3,7 @@
 #include <array>
 #include <initializer_list>
 
-namespace ecs::math
+namespace Engine::math
 {
 
 struct Vector2
@@ -69,4 +69,4 @@ struct AABB
 	}
 };
 
-} // namespace ecs::math
+} // namespace Engine::math

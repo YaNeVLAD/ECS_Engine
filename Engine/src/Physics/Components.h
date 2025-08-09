@@ -1,9 +1,8 @@
 #pragma once
 #include "../Math/Vector.h"
 #include <numeric>
-#include <vector>
 
-namespace ecs::physics::components
+namespace Engine::physics::components
 {
 
 struct Transform
@@ -47,11 +46,11 @@ struct AABBCollider
 
 struct CollisionManifold
 {
-	Entity EntityA = InvalidEntity;
-	Entity EntityB = InvalidEntity;
+	ecs::Entity EntityA = ecs::InvalidEntity;
+	ecs::Entity EntityB = ecs::InvalidEntity;
 
 	math::Vector2 Normal;
 	float Penetration = 0.f;
 };
 
-} // namespace ecs::physics::components
+} // namespace Engine::physics::components

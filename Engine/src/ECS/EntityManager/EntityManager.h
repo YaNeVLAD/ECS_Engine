@@ -7,7 +7,7 @@
 #include "../Entity/Entity.h"
 #include "../Entity/Signature.h"
 
-namespace ecs
+namespace Engine::ecs
 {
 
 class EntityManager final
@@ -40,6 +40,6 @@ private:
 	std::vector<size_t> m_entityLocations;
 };
 
-} // namespace ecs
+} // namespace Engine::ecs
 
 #include "EntityManager.impl"

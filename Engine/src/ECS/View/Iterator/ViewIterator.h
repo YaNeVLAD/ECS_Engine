@@ -5,7 +5,7 @@
 
 #include "../../ComponentManager/ComponentManager.h"
 
-namespace ecs
+namespace Engine::ecs
 {
 
 template <bool IsConst, typename... _TComponents>
@@ -63,4 +63,4 @@ private:
 	EntityIterator m_it;
 };
 
-} // namespace ecs
+} // namespace Engine::ecs

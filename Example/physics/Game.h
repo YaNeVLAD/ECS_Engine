@@ -18,6 +18,8 @@
 
 #include "PlayerController.h"
 
+using namespace Engine;
+
 struct Renderable
 {
 	glm::vec2 size{ 50.0f, 50.0f };
@@ -79,7 +81,7 @@ public:
 		glBindVertexArray(0);
 	}
 
-	void Draw(ecs::View<ecs::physics::components::Transform, Renderable, ecs::physics::components::AABBCollider> const& view, glm::mat4 const& projection, glm::mat4 const& viewMatrix) const
+	void Draw(ecs::View<physics::components::Transform, Renderable, physics::components::AABBCollider> const& view, glm::mat4 const& projection, glm::mat4 const& viewMatrix) const
 	{
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
@@ -92,7 +94,7 @@ public:
 
 		for (const auto& [entity, transform, renderable, collider] : view)
 		{
-			ecs::math::Vector2 size = { renderable.size.x, renderable.size.y };
+			math::Vector2 size = { renderable.size.x, renderable.size.y };
 			DrawRect(transform.Position, size, { 1.f, 0.f, 0.f, 1.f });
 
 			// DrawRect(collider.Position, collider.Size, { 0.f, 1.f, 0.f, 1.f });
@@ -116,8 +118,8 @@ private:
 	unsigned int m_quadVAO, m_quadVBO, m_quadEBO;
 
 	void DrawRect(
-		ecs::math::Vector2 const& position,
-		ecs::math::Vector2 const& size,
+		math::Vector2 const& position,
+		math::Vector2 const& size,
 		glm::vec4 const& color) const
 	{
 		glm::vec2 vec = { position.X, position.Y };
@@ -134,8 +136,8 @@ private:
 
 void RunGame()
 {
-	using namespace ecs::physics;
-	using namespace ecs::physics::components;
+	using namespace physics;
+	using namespace physics::components;
 
 	const int SCREEN_WIDTH = 1920;
 	const int SCREEN_HEIGHT = 1080;
@@ -199,15 +201,15 @@ void RunGame()
 		RigidBody,
 		Renderable,
 		AABBCollider,
-		ecs::ScriptComponent>();
+		scripts::ScriptComponent>();
 
 	world.RegisterSystem<PhysicsSystem>()
 		.WithRead<Transform>()
 		.WithRead<RigidBody>()
 		.WithRead<AABBCollider>();
 
-	world.RegisterSystem<ecs::ScriptingSystem>()
-		.WithRead<ecs::ScriptComponent>();
+	world.RegisterSystem<scripts::ScriptingSystem>()
+		.WithRead<scripts::ScriptComponent>();
 
 	world.BuildSystemGraph();
 
@@ -219,7 +221,7 @@ void RunGame()
 	for (int i = 0; i < ENTITY_COUNT; ++i)
 	{
 		glm::vec2 size = { 50.f, 50.f };
-		ecs::math::Vector2 size2 = { 50.f, 50.f };
+		math::Vector2 size2 = { 50.f, 50.f };
 		ecs::Entity entity = world.CreateEntity();
 		world.AddComponent<Transform>(entity, { pos_dist(rng), pos_dist(rng) });
 		world.AddComponent<RigidBody>(entity,
@@ -236,8 +238,8 @@ void RunGame()
 	world.AddComponent<AABBCollider>(player);
 	world.AddComponent<Renderable>(player, Renderable{ .color = { 1.f, 0.f, 0.f, 1.f } });
 	world.AddComponent<Input>(player);
-	world.AddComponent<ecs::ScriptComponent>(player);
-	ecs::Bind<PlayerController>(world, player);
+	world.AddComponent<scripts::ScriptComponent>(player);
+	scripts::Bind<PlayerController>(world, player);
 
 	auto renderView = world.CreateView<Transform, Renderable, AABBCollider>();
 

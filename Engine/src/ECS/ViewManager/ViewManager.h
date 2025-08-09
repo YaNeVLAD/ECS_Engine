@@ -6,7 +6,7 @@
 #include "../TypeIndex/TypeIndex.h"
 #include "../View/View.h"
 
-namespace ecs
+namespace Engine::ecs
 {
 
 class ViewManager final
@@ -27,6 +27,6 @@ private:
 	std::unordered_map<Signature, std::shared_ptr<IView>> m_views;
 };
 
-} // namespace ecs
+} // namespace Engine::ecs
 
 #include "ViewManager.impl"

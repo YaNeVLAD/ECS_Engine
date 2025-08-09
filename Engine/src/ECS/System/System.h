@@ -4,7 +4,7 @@
 
 #include "../EntityWrapper/EntityWrapper.h"
 
-namespace ecs
+namespace Engine::ecs
 {
 class Scene;
 
@@ -21,4 +21,4 @@ public:
 	std::vector<WrappedEntity> Entities;
 };
 
-} // namespace ecs
+} // namespace Engine::ecs

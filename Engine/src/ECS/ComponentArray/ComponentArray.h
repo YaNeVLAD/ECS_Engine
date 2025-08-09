@@ -5,7 +5,7 @@
 
 #include "IComponentArray.h"
 
-namespace ecs
+namespace Engine::ecs
 {
 
 template <typename _TComponent>
@@ -36,6 +36,6 @@ private:
 	std::vector<Entity> m_denseToEntity;
 };
 
-} // namespace ecs
+} // namespace Engine::ecs
 
 #include "ComponentArray.impl"

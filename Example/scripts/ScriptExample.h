@@ -24,6 +24,8 @@
 #include "Components.h"
 #include "PlayerController.h"
 
+using namespace Engine;
+
 class MovementSystem : public ecs::System
 {
 public:
@@ -295,7 +297,7 @@ public:
 		Renderer renderer;
 		renderer.Init(vsSource, fsSource);
 
-		world.RegisterComponents<Position, Velocity, Renderable, Input, Camera, Collider, ecs::ScriptComponent>();
+		world.RegisterComponents<Position, Velocity, Renderable, Input, Camera, Collider, scripts::ScriptComponent>();
 
 		// ћатрица вида, котора€ будет обновл€тьс€ CameraSystem
 		glm::mat4 viewMatrix = glm::mat4(1.0f);
@@ -313,8 +315,8 @@ public:
 		world.RegisterSystem<CameraSystem>(playerStartPos, viewMatrix, SCREEN_WIDTH, SCREEN_HEIGHT)
 			.WithRead<Position>()
 			.WithWrite<Camera>();
-		world.RegisterSystem<ecs::ScriptingSystem>()
-			.WithRead<ecs::ScriptComponent>();
+		world.RegisterSystem<scripts::ScriptingSystem>()
+			.WithRead<scripts::ScriptComponent>();
 
 		world.BuildSystemGraph();
 
@@ -326,8 +328,8 @@ public:
 		world.AddComponent<Input>(playerEntity);
 		world.AddComponent<Camera>(playerEntity);
 		world.AddComponent<Collider>(playerEntity, { playerStartPos.x, playerStartPos.y, 50.f, 50.f });
-		world.AddComponent<ecs::ScriptComponent>(playerEntity);
-		ecs::Bind<PlayerController>(world, playerEntity);
+		world.AddComponent<scripts::ScriptComponent>(playerEntity);
+		scripts::Bind<PlayerController>(world, playerEntity, 1);
 
 		std::mt19937 rng(std::random_device{}());
 		std::uniform_real_distribution<float> pos_dist(300.f, 1000.f);

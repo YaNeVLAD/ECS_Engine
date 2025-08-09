@@ -1,7 +1,7 @@
 #pragma once
 #include <cstddef>
 
-namespace ecs::details
+namespace Engine::ecs::details
 {
 
 constexpr std::size_t ENTITY_INDEX_BITS = 32;
@@ -10,9 +10,9 @@ constexpr std::size_t ENTITY_GENERATION_BITS = 32;
 constexpr std::size_t ENTITY_INDEX_MASK = (1ULL << ENTITY_INDEX_BITS) - 1;
 constexpr std::size_t ENTITY_GENERATION_MASK = (1ULL << ENTITY_GENERATION_BITS) - 1;
 
-} // namespace ecs::details
+} // namespace Engine::ecs::details
 
-namespace ecs
+namespace Engine::ecs
 {
 
 struct Entity
@@ -49,4 +49,4 @@ inline Entity CreateEntity(std::size_t index, std::size_t generation)
 
 constexpr Entity InvalidEntity = Entity{ details::ENTITY_INDEX_MASK };
 
-} // namespace ecs
+} // namespace Engine::ecs

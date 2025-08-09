@@ -11,7 +11,7 @@
 #include "../System/System.h"
 #include "../TypeIndex/TypeIndex.h"
 
-namespace ecs
+namespace Engine::ecs
 {
 using SystemId = TypeIndexType;
 
@@ -54,6 +54,6 @@ private:
 	std::vector<std::vector<SystemId>> m_executionStages;
 };
 
-} // namespace ecs
+} // namespace Engine::ecs
 
 #include "SystemManager.impl"

@@ -3,7 +3,7 @@
 #include "../Entity/Entity.h"
 #include "../Entity/Signature.h"
 
-namespace ecs
+namespace Engine::ecs
 {
 
 template <typename _TScene>
@@ -91,4 +91,4 @@ private:
 	Signature m_signature;
 };
 
-} // namespace ecs
+} // namespace Engine::ecs

@@ -9,7 +9,7 @@
 #include "../SystemManager/SystemManager.h"
 #include "../ViewManager/ViewManager.h"
 
-namespace ecs
+namespace Engine::ecs
 {
 
 class Scene
@@ -168,4 +168,4 @@ private:
 	std::vector<Entity> m_entitiesToDestroy;
 };
 
-} // namespace ecs
+} // namespace Engine::ecs

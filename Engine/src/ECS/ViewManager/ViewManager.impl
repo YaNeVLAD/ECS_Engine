@@ -1,5 +1,4 @@
-#include "ViewManager.h"
-namespace ecs
+namespace Engine::ecs
 {
 
 template <typename... _TComponents>

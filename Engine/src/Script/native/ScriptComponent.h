@@ -5,7 +5,7 @@
 
 #include "ScriptableEntity.h"
 
-namespace ecs::scripts
+namespace Engine::scripts
 {
 
 class ScriptableEntity;
@@ -39,14 +39,14 @@ private:
 	friend class ScriptingSystem;
 };
 
-template <typename _TScript>
-void Bind(ecs::Scene& scene, ecs::Entity entity)
+template <typename _TScript, typename... _TArgs>
+void Bind(ecs::Scene& scene, ecs::Entity entity, _TArgs&&... args)
 {
 	if (scene.IsRegistered<ScriptComponent>())
 	{
 		scene.GetComponent<ScriptComponent>(entity)
-			.Bind<_TScript>(scene, entity);
+			.Bind<_TScript>(scene, entity, args...);
 	}
 }
 
-} // namespace ecs::scripts
+} // namespace Engine::scripts

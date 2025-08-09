@@ -2,11 +2,11 @@
 
 #include <bitset>
 
-namespace ecs
+namespace Engine::ecs
 {
 
 constexpr std::size_t MAX_COMPONENTS = 64;
 
 using Signature = std::bitset<MAX_COMPONENTS>;
 
-} // namespace ecs
+} // namespace Engine::ecs

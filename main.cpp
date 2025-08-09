@@ -15,11 +15,7 @@
 #include "Example/physics/Game.h"
 #include "Timer.h"
 
-namespace ecs
-{
-}
-
-using namespace ecs;
+using namespace Engine::ecs;
 
 #define BENCHMARK_ON 0
 

@@ -1,8 +1,12 @@
 #pragma once
 
-#include "../../Engine/src/ECS/Scene/Scene.h"
-#include "SFML/Graphics.hpp"
 #include <random>
+
+#include <SFML/Graphics.hpp>
+
+#include <ecs.hpp>
+
+using namespace Engine;
 
 struct Position
 {
@@ -44,10 +48,10 @@ class HandleInputSystem : public ecs::System
 public:
 	void Update(ecs::Scene& world, float dt) override
 	{
-		for (const auto& entity : Entities)
+		for (auto& entity : Entities)
 		{
-			const auto& input = world.GetComponent<Input>(entity);
-			auto& velocity = world.GetComponent<Velocity>(entity);
+			const auto& input = entity.GetComponent<Input>();
+			auto& velocity = entity.GetComponent<Velocity>();
 
 			velocity.vx = 0.f;
 			velocity.vy = 0.f;
@@ -69,10 +73,10 @@ class MovementSystem : public ecs::System
 public:
 	void Update(ecs::Scene& world, float dt) override
 	{
-		for (const auto& entity : Entities)
+		for (auto& entity : Entities)
 		{
-			auto& position = world.GetComponent<Position>(entity);
-			const auto& velocity = world.GetComponent<Velocity>(entity);
+			auto& position = entity.GetComponent<Position>();
+			const auto& velocity = entity.GetComponent<Velocity>();
 
 			position.x += velocity.vx * dt;
 			position.y += velocity.vy * dt;
@@ -85,10 +89,10 @@ class ColliderUpdateSystem : public ecs::System
 public:
 	void Update(ecs::Scene& world, float dt) override
 	{
-		for (const auto& entity : Entities)
+		for (auto& entity : Entities)
 		{
-			const auto& position = world.GetComponent<Position>(entity);
-			auto& collider = world.GetComponent<Collider>(entity);
+			const auto& position = entity.GetComponent<Position>();
+			auto& collider = entity.GetComponent<Collider>();
 
 			collider.rect.left = position.x;
 			collider.rect.top = position.y;
@@ -106,17 +110,17 @@ public:
 
 	void Update(ecs::Scene& world, float dt) override
 	{
-		for (auto [entity, collider, renderable] : m_allCollidables->Each())
+		for (auto [entity, collider, renderable] : *m_allCollidables)
 		{
 			renderable.rect.setFillColor(sf::Color::Red);
 		}
 
-		for (const auto& entity : Entities)
+		for (auto& entity : Entities)
 		{
-			auto& renderable = world.GetComponent<Renderable>(entity);
-			auto& collider = world.GetComponent<Collider>(entity);
+			auto& renderable = entity.GetComponent<Renderable>();
+			const auto& collider = entity.GetComponent<Collider>();
 
-			for (auto [otherEntity, otherCollider, otherRenderable] : m_allCollidables->Each())
+			for (auto [otherEntity, otherCollider, otherRenderable] : *m_allCollidables)
 			{
 				if (entity == otherEntity)
 					continue;
@@ -145,8 +149,8 @@ public:
 	{
 		for (const auto& entity : Entities)
 		{
-			const auto& position = world.GetComponent<Position>(entity);
-			auto& cameraComponent = world.GetComponent<Camera>(entity);
+			const auto& position = entity.GetComponent<Position>();
+			auto& cameraComponent = entity.GetComponent<Camera>();
 
 			sf::View* cameraView = cameraComponent.view;
 			if (cameraView)
@@ -168,7 +172,7 @@ public:
 	{
 		window.clear(sf::Color::Black);
 
-		for (auto [entity, position, renderable] : view.Each())
+		for (auto [entity, position, renderable] : view)
 		{
 			renderable.rect.setPosition(position.x, position.y);
 			window.draw(renderable.rect);

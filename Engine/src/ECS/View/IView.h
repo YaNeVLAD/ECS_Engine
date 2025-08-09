@@ -3,7 +3,7 @@
 #include "../Entity/Entity.h"
 #include "../Entity/Signature.h"
 
-namespace ecs
+namespace Engine::ecs
 {
 
 class IView
@@ -14,4 +14,4 @@ public:
 	virtual void OnEntityDestroyed(Entity entity) = 0;
 };
 
-} // namespace ecs
+} // namespace Engine::ecs

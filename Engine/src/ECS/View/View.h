@@ -7,7 +7,7 @@
 #include "IView.h"
 #include "Iterator/ViewIterator.h"
 
-namespace ecs
+namespace Engine::ecs
 {
 
 template <typename... _TComponents>
@@ -60,4 +60,4 @@ private:
 	std::vector<Entity> m_entities;
 };
 
-} // namespace ecs
+} // namespace Engine::ecs

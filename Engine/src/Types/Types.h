@@ -1,6 +1,8 @@
 #pragma once
 
 #include "SimpleType.h"
+#include <cmath>
+#include <cstdint>
 
 using Float = details::SimpleType<std::float_t>;
 

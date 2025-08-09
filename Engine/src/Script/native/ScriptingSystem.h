@@ -4,10 +4,10 @@
 
 #include "../../ECS/Scene/Scene.h"
 
-namespace ecs::scripts
+namespace Engine::scripts
 {
 
-class ScriptingSystem : public System
+class ScriptingSystem : public ecs::System
 {
 public:
 	void Update(ecs::Scene&, float dt) override
@@ -23,4 +23,4 @@ public:
 	}
 };
 
-} // namespace ecs::scripts
+} // namespace Engine::scripts

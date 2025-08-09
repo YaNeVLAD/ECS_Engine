@@ -2,7 +2,7 @@
 
 #include "../../ECS/Scene/Scene.h"
 
-namespace ecs::scripts
+namespace Engine::scripts
 {
 
 class ScriptableEntity
@@ -32,10 +32,10 @@ protected:
 	}
 
 private:
-	ecs::Entity m_entity = InvalidEntity;
+	ecs::Entity m_entity = ecs::InvalidEntity;
 	ecs::Scene* m_scene = nullptr;
 
 	friend class ScriptComponent;
 };
 
-} // namespace ecs::scripts
+} // namespace Engine::scripts
