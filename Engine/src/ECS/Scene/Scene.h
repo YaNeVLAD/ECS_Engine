@@ -116,7 +116,7 @@ public:
 		m_systemManager->BuildExecutionGraph();
 	}
 
-	void TakeStep(float dt)
+	void Frame(float dt)
 	{
 		m_systemManager->Execute(*this, dt);
 	}

@@ -265,7 +265,7 @@ public:
 
 			float dt = clock.restart().asSeconds();
 
-			world.TakeStep(dt);
+			world.Frame(dt);
 
 			world.ConfirmChanges();
 

@@ -27,15 +27,6 @@
     <ClInclude Include="Example\new\NewExample.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="Example\scripts\ScriptExample.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="Example\scripts\PlayerController.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="Example\scripts\Components.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
     <ClInclude Include="Example\physics\Game.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
@@ -51,9 +42,6 @@
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="Example\TracyClient.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="Example\glad.c">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>

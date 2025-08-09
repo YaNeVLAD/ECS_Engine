@@ -120,7 +120,7 @@
     <ClInclude Include="src\Physics\Components.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="src\Math\Vector.h">
+    <ClInclude Include="src\Math\Vector2.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="src\Physics\System.h">
@@ -135,6 +135,30 @@
     <ClInclude Include="public\scripts.hpp">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="src\Render\2D\Renderer2D.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Render\2D\Components.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Render\Common\Color\Color.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Application\Application.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Render\Common\Window\Window.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="public\Application.hpp">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="public\render.hpp">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="public\types.hpp">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\ECS\ComponentManager\ComponentManager.impl" />
@@ -142,5 +166,20 @@
     <None Include="src\ECS\SystemManager\SystemManager.impl" />
     <None Include="src\ECS\ViewManager\ViewManager.impl" />
     <None Include="src\ECS\ComponentArray\ComponentArray.impl" />
+    <None Include="src\Render\Common\Color\Color.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Render\Common\Window\Window.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Application\Application.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Render\2D\Renderer2D.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="glad.c">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

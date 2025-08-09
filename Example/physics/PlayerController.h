@@ -2,9 +2,8 @@
 
 #include <iostream>
 
-#include <Script/native/ScriptableEntity.h>
-
-#include <Physics/Components.h>
+#include <physics.hpp>
+#include <scripts.hpp>
 
 struct Input
 {
@@ -35,8 +34,8 @@ public:
 		if (input.moveRight)
 			body.Velocity.X += 500.f;
 		if (input.moveUp)
-			body.Velocity.Y -= 500.f;
-		if (input.moveDown)
 			body.Velocity.Y += 500.f;
+		if (input.moveDown)
+			body.Velocity.Y -= 500.f;
 	}
 };

@@ -5,21 +5,23 @@
 #include <SFML/Graphics.hpp>
 
 #define ENTT 0
+#define BENCHMARK_ON 0
 
 #if ENTT
 #include "Example/entt/Scene.h"
 #else
 #include <ecs.hpp>
+using namespace Engine::ecs;
 #endif
 
+#if !BENCHMARK_ON
 #include "Example/physics/Game.h"
-#include "Timer.h"
-
-using namespace Engine::ecs;
-
-#define BENCHMARK_ON 0
+#endif
 
 #if BENCHMARK_ON
+
+#include "Timer.h"
+
 struct Transform
 {
 	float x = 0.0f, y = 0.0f, z = 0.0f;
@@ -175,7 +177,7 @@ public:
 		for (const auto& data : renderDataSystem.GetDrawData())
 		{
 			rect.setPosition(data.x, data.y);
-			// window.draw(rect);
+			window.draw(rect);
 		}
 
 		window.display();
@@ -266,7 +268,7 @@ int main()
 
 		auto dt = clock.restart().asSeconds();
 
-		world.TakeStep(dt);
+		world.Frame(dt);
 
 		world.ConfirmChanges();
 
@@ -313,7 +315,9 @@ int main()
 	}
 #endif
 
-	RunGame();
+	auto app = Engine::CreateApplication();
+	app->Run();
+	delete app;
 
 	return 0;
 }

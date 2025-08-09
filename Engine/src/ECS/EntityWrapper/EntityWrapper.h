@@ -7,7 +7,7 @@ namespace Engine::ecs
 {
 
 template <typename _TScene>
-class EntityWrapper
+class EntityWrapper final
 {
 public:
 	EntityWrapper(_TScene* scene, Entity id, Signature signature)

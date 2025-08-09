@@ -1,6 +1,7 @@
 #pragma once
-#include "../Math/Vector.h"
-#include <numeric>
+#include "../ECS/Entity/Entity.h"
+#include "../Math/Vector2.h"
+#include <limits>
 
 namespace Engine::physics::components
 {

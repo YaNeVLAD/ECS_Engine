@@ -5,14 +5,6 @@
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Profile|Win32">
-      <Configuration>Profile</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Profile|x64">
-      <Configuration>Profile</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
@@ -60,12 +52,6 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
-  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">
-    <PlatformToolset>v143</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
-    <PlatformToolset>v143</PlatformToolset>
-  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
@@ -95,7 +81,8 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp23</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(ProjectDir)include\tracy\public;$(ProjectDir)include\;%(AdditionalIncludeDirectories);$(ProjectDir)Engine\src;$(ProjectDir)Engine\public</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include\tracy\public;$(ProjectDir)include\;%(AdditionalIncludeDirectories);$(ProjectDir)Engine\public</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -114,7 +101,8 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp23</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(ProjectDir)include\tracy\public;$(ProjectDir)include\;%(AdditionalIncludeDirectories);$(ProjectDir)Engine\src;$(ProjectDir)Engine\public</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include\tracy\public;$(ProjectDir)include\;%(AdditionalIncludeDirectories);$(ProjectDir)Engine\public</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -133,7 +121,8 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp23</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(ProjectDir)include\tracy\public;$(ProjectDir)include\;%(AdditionalIncludeDirectories);$(ProjectDir)Engine\src;$(ProjectDir)Engine\public</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include\tracy\public;$(ProjectDir)include\;%(AdditionalIncludeDirectories);$(ProjectDir)Engine\public;$(ProjectDir)Engine\include</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -152,7 +141,8 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp23</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(ProjectDir)include\tracy\public;$(ProjectDir)include\;%(AdditionalIncludeDirectories);$(ProjectDir)Engine\src;$(ProjectDir)Engine\public</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include\tracy\public;$(ProjectDir)include\;%(AdditionalIncludeDirectories);$(ProjectDir)Engine\public;$(ProjectDir)Engine\include</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -163,29 +153,15 @@
       <AdditionalDependencies>$(ProjectDir)lib\tracy\TracyClient.lib;$(ProjectDir)lib\SFML\sfml-graphics.lib;$(ProjectDir)lib\SFML\sfml-system.lib;$(ProjectDir)lib\SFML\sfml-window.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">
-    <ClCompile>
-      <AdditionalIncludeDirectories>;$(ProjectDir)Engine\src</AdditionalIncludeDirectories>
-    </ClCompile>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
-    <ClCompile>
-      <AdditionalIncludeDirectories>;$(ProjectDir)Engine\src</AdditionalIncludeDirectories>
-    </ClCompile>
-  </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Example\entt\Scene.h" />
     <ClInclude Include="Example\legacy\ExampleGame.h" />
     <ClInclude Include="Example\new\NewExample.h" />
     <ClInclude Include="Example\physics\Game.h" />
     <ClInclude Include="Example\physics\PlayerController.h" />
-    <ClInclude Include="Example\scripts\Components.h" />
-    <ClInclude Include="Example\scripts\PlayerController.h" />
-    <ClInclude Include="Example\scripts\ScriptExample.h" />
     <ClInclude Include="Timer.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Example\glad.c" />
     <ClCompile Include="Example\TracyClient.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
@@ -195,16 +171,19 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="Engine\Engine.vcxproj">
+      <Project>{49eea347-4c0f-4cf3-9f98-cb8fee3e747f}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="packages\glfw.3.4.0\build\native\glfw.targets" Condition="Exists('packages\glfw.3.4.0\build\native\glfw.targets')" />
-    <Import Project="packages\glm.1.0.1\build\native\glm.targets" Condition="Exists('packages\glm.1.0.1\build\native\glm.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>Данный проект ссылается на пакеты NuGet, отсутствующие на этом компьютере. Используйте восстановление пакетов NuGet, чтобы скачать их.  Дополнительную информацию см. по адресу: http://go.microsoft.com/fwlink/?LinkID=322105. Отсутствует следующий файл: {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('packages\glfw.3.4.0\build\native\glfw.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\glfw.3.4.0\build\native\glfw.targets'))" />
-    <Error Condition="!Exists('packages\glm.1.0.1\build\native\glm.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\glm.1.0.1\build\native\glm.targets'))" />
   </Target>
 </Project>

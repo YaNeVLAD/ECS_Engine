@@ -117,7 +117,7 @@ public:
 		// no-op
 	}
 
-	void TakeStep(float dt)
+	void Frame(float dt)
 	{
 		// Просто выполняем все системы в порядке их регистрации
 		for (auto const& system : m_systemExecutionOrder)
