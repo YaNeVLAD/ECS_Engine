@@ -12,6 +12,7 @@
 #include <ecs.hpp>
 #endif
 
+#include "Example/physics/Game.h"
 #include "Timer.h"
 
 namespace ecs
@@ -20,7 +21,7 @@ namespace ecs
 
 using namespace ecs;
 
-#define BENCHMARK_ON 1
+#define BENCHMARK_ON 0
 
 #if BENCHMARK_ON
 struct Transform
@@ -315,6 +316,8 @@ int main()
 		std::cout << "   Contribution: " << percentage << "%\n";
 	}
 #endif
+
+	RunGame();
 
 	return 0;
 }

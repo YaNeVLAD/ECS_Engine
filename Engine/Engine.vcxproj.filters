@@ -60,7 +60,7 @@
     <ClInclude Include="src\ECS\ComponentManager\ComponentManager.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="src\ECS\TypeId\TypeId.h">
+    <ClInclude Include="src\ECS\TypeIndex\TypeIndex.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="src\ECS\EntityManager\EntityManager.h">

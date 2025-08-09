@@ -29,10 +29,10 @@ private:
 	bool IsValid(Entity entity) const;
 
 private:
-	IdType m_nextEntityIndex = 0;
-	std::queue<IdType> m_availableIndices;
+	TypeIndexType m_nextEntityIndex = 0;
+	std::queue<TypeIndexType> m_availableIndices;
 
-	std::vector<IdType> m_generations;
+	std::vector<TypeIndexType> m_generations;
 
 	std::vector<Signature> m_signatures;
 

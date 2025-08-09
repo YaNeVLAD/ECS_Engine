@@ -47,7 +47,7 @@ template <typename... _TComponents>
 inline Signature ViewManager::CreateSignature()
 {
 	Signature signature;
-	(signature.set(TypeIdOf<_TComponents>()), ...);
+	(signature.set(TypeIndex<_TComponents>()), ...);
 	return signature;
 }
 

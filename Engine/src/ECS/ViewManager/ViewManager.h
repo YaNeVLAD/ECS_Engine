@@ -3,7 +3,7 @@
 #include <memory>
 
 #include "../EntityManager/EntityManager.h"
-#include "../TypeId/TypeId.h"
+#include "../TypeIndex/TypeIndex.h"
 #include "../View/View.h"
 
 namespace ecs

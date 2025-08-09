@@ -75,7 +75,7 @@ public:
 		m_componentManager->RemoveComponent<_TComponent>(entity);
 
 		auto& signature = m_entityManager->GetSignature(entity);
-		signature.set(TypeIdOf<_TComponent>());
+		signature.set(TypeIndex<_TComponent>());
 		m_entityManager->SetSignature(entity, signature);
 
 		m_systemManager->OnEntitySignatureChanged(entity, signature, this);
@@ -152,7 +152,7 @@ private:
 		m_componentManager->AddComponent(entity, component);
 
 		auto& signature = m_entityManager->GetSignature(entity);
-		signature.set(TypeIdOf<_TComponent>());
+		signature.set(TypeIndex<_TComponent>());
 		m_entityManager->SetSignature(entity, signature);
 
 		m_systemManager->OnEntitySignatureChanged(entity, signature, this);

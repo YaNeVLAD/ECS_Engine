@@ -5,11 +5,11 @@
 #include <unordered_map>
 
 #include "../ComponentArray/ComponentArray.h"
-#include "../TypeId/TypeId.h"
+#include "../TypeIndex/TypeIndex.h"
 
 namespace ecs
 {
-using ComponentType = TypeId;
+using ComponentType = TypeIndexType;
 
 class ComponentManager final
 {

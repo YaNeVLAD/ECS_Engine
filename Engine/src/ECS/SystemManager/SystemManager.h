@@ -9,11 +9,11 @@
 #include "../ComponentManager/ComponentManager.h"
 #include "../EntityManager/EntityManager.h"
 #include "../System/System.h"
-#include "../TypeId/TypeId.h"
+#include "../TypeIndex/TypeIndex.h"
 
 namespace ecs
 {
-using SystemId = TypeId;
+using SystemId = TypeIndexType;
 
 class SystemManager final
 {

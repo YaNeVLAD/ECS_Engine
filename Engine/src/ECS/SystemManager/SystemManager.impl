@@ -5,7 +5,7 @@ namespace ecs
 template <typename _TSystem, typename... _TArgs>
 inline SystemManager& SystemManager::RegisterSystem(_TArgs&&... args)
 {
-	m_currentSystemId = TypeIdOf<_TSystem>();
+	m_currentSystemId = TypeIndex<_TSystem>();
 
 	assert(!m_systems.contains(m_currentSystemId)
 		&& "Registering system more than once.");
@@ -21,7 +21,7 @@ inline SystemManager& SystemManager::RegisterSystem(_TArgs&&... args)
 template <typename _TSystem>
 inline bool SystemManager::IsSystemRegistered()
 {
-	return m_systems.contains(TypeIdOf<_TSystem>());
+	return m_systems.contains(TypeIndex<_TSystem>());
 }
 
 template <typename... _TComponents>
@@ -44,7 +44,7 @@ inline SystemManager& SystemManager::WithWrite()
 	assert(!m_writeDependencies.contains(m_currentSystemId)
 		&& "System can only have one write dependency.");
 
-	ComponentType componentType = TypeIdOf<_TComponent>();
+	ComponentType componentType = TypeIndex<_TComponent>();
 
 	m_signatures[m_currentSystemId].set(componentType);
 	m_writeDependencies[m_currentSystemId] = componentType;
@@ -55,7 +55,7 @@ inline SystemManager& SystemManager::WithWrite()
 template <typename _TSystem>
 inline _TSystem& SystemManager::GetSystem() const
 {
-	SystemId systemId = TypeIdOf<_TSystem>();
+	SystemId systemId = TypeIndex<_TSystem>();
 	assert(m_systems.contains(systemId)
 		&& "Cannot get system: not registered.");
 
@@ -65,7 +65,7 @@ inline _TSystem& SystemManager::GetSystem() const
 template <typename _TComponent>
 inline void SystemManager::AddReadDependency()
 {
-	ComponentType componentType = TypeIdOf<_TComponent>();
+	ComponentType componentType = TypeIndex<_TComponent>();
 
 	m_signatures[m_currentSystemId].set(componentType);
 	m_readDependencies[m_currentSystemId].set(componentType);
