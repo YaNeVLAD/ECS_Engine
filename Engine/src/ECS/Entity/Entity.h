@@ -50,3 +50,15 @@ inline Entity CreateEntity(std::size_t index, std::size_t generation)
 constexpr Entity InvalidEntity = Entity{ details::ENTITY_INDEX_MASK };
 
 } // namespace Engine::ecs
+
+namespace std
+{
+template <>
+struct hash<Engine::ecs::Entity>
+{
+	std::size_t operator()(Engine::ecs::Entity const& entity) const noexcept
+	{
+		return entity.id;
+	}
+};
+} // namespace std

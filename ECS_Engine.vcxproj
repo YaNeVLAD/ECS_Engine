@@ -162,6 +162,7 @@
     <ClInclude Include="Timer.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Engine\glad.c" />
     <ClCompile Include="Example\TracyClient.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>

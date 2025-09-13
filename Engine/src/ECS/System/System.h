@@ -19,6 +19,7 @@ public:
 	virtual void Update(Scene& scene, float dt) = 0;
 
 	std::vector<WrappedEntity> Entities;
+	std::unordered_map<Entity, size_t> EntityToIndexMap;
 };
 
 } // namespace Engine::ecs

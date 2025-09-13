@@ -313,11 +313,13 @@ int main()
 		std::cout << "   Avg time/frame: " << static_cast<double>(timing_us) / frameCount << " us\n";
 		std::cout << "   Contribution: " << percentage << "%\n";
 	}
-#endif
+#else
 
 	auto app = Engine::CreateApplication();
 	app->Run();
 	delete app;
 
 	return 0;
+
+#endif
 }

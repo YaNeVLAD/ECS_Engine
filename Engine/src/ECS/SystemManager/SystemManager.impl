@@ -1,21 +1,35 @@
-#include "SystemManager.h"
 namespace Engine::ecs
 {
 
-template <typename _TSystem, typename... _TArgs>
-inline SystemManager& SystemManager::RegisterSystem(_TArgs&&... args)
+inline SystemManager::SystemManager()
 {
-	m_currentSystemId = TypeIndex<_TSystem>();
+	const size_t threadCount = std::thread::hardware_concurrency();
+	m_workerThreads.reserve(threadCount);
+	for (size_t i = 0; i < threadCount; ++i)
+	{
+		m_workerThreads.emplace_back(&SystemManager::WorkerLoop, this);
+	}
+}
 
-	assert(!m_systems.contains(m_currentSystemId)
+inline SystemManager::~SystemManager()
+{
+	m_stopThreads = true;
+	m_workerCondition.notify_all();
+}
+
+template <typename _TSystem, typename... _TArgs>
+inline SystemManager::SystemConfiguration SystemManager::RegisterSystem(_TArgs&&... args)
+{
+	SystemId systemId = TypeIndex<_TSystem>();
+
+	assert(!m_systems.contains(systemId)
 		&& "Registering system more than once.");
 
-	auto system = std::make_shared<_TSystem>(std::forward<_TArgs>(args)...);
-	m_systems[m_currentSystemId] = system;
-	m_signatures[m_currentSystemId] = Signature{};
-	m_readDependencies[m_currentSystemId] = Signature{};
+	m_systems[systemId] = std::make_unique<_TSystem>(std::forward<_TArgs>(args)...);
+	m_signatures[systemId] = Signature{};
+	m_readDependencies[systemId] = Signature{};
 
-	return *this;
+	return SystemConfiguration(*this, systemId);
 }
 
 template <typename _TSystem>
@@ -25,35 +39,28 @@ inline bool SystemManager::IsSystemRegistered()
 }
 
 template <typename... _TComponents>
-inline SystemManager& SystemManager::WithRead()
+inline void SystemManager::AddReadDependencies(SystemId systemId)
 {
-	assert(m_currentSystemId != InvalidEntity
-		&& "No system selected for dependency registration.");
-
-	(AddReadDependency<_TComponents>(), ...);
-
-	return *this;
+	([&] {
+		ComponentType componentType = TypeIndex<_TComponents>();
+		m_signatures[systemId].set(componentType);
+		m_readDependencies[systemId].set(componentType);
+	}(),
+		...);
 }
 
 template <typename _TComponent>
-inline SystemManager& SystemManager::WithWrite()
+inline void SystemManager::AddWriteDependency(SystemId systemId)
 {
-	assert(m_currentSystemId != InvalidEntity
-		&& "No system selected for dependency registration.");
-
-	assert(!m_writeDependencies.contains(m_currentSystemId)
-		&& "System can only have one write dependency.");
+	assert(!m_writeDependencies.contains(systemId) && "System can only have one write dependency.");
 
 	ComponentType componentType = TypeIndex<_TComponent>();
-
-	m_signatures[m_currentSystemId].set(componentType);
-	m_writeDependencies[m_currentSystemId] = componentType;
-
-	return *this;
+	m_signatures[systemId].set(componentType);
+	m_writeDependencies[systemId] = componentType;
 }
 
 template <typename _TSystem>
-inline _TSystem& SystemManager::GetSystem() const
+inline _TSystem& SystemManager::GetSystem()
 {
 	SystemId systemId = TypeIndex<_TSystem>();
 	assert(m_systems.contains(systemId)
@@ -62,33 +69,43 @@ inline _TSystem& SystemManager::GetSystem() const
 	return *static_cast<_TSystem*>(m_systems.at(systemId).get());
 }
 
-template <typename _TComponent>
-inline void SystemManager::AddReadDependency()
+template <typename _TSystem>
+inline _TSystem const& SystemManager::GetSystem() const
 {
-	ComponentType componentType = TypeIndex<_TComponent>();
-
-	m_signatures[m_currentSystemId].set(componentType);
-	m_readDependencies[m_currentSystemId].set(componentType);
+	return const_cast<SystemManager const&>(*this).GetSystem<_TSystem>();
 }
 
 inline void ecs::SystemManager::OnEntitySignatureChanged(Entity entity, Signature entitySignature, Scene* scene)
 {
-	auto wrapper = System::WrappedEntity{ scene, entity, entitySignature };
-
 	for (auto const& [id, system] : m_systems)
 	{
-		Signature const& systemSignature = m_signatures.at(id);
+		const Signature& systemSignature = m_signatures.at(id);
+		const bool hasEntity = system->EntityToIndexMap.contains(entity);
+		const bool signatureMatch = (entitySignature & systemSignature) == systemSignature;
 
-		if ((entitySignature & systemSignature) == systemSignature)
+		if (signatureMatch && !hasEntity)
 		{
-			if (std::ranges::find(system->Entities, wrapper) == system->Entities.end())
-			{
-				system->Entities.push_back(wrapper);
-			}
+			system->EntityToIndexMap[entity] = system->Entities.size();
+			system->Entities.push_back({ scene, entity, entitySignature });
 		}
-		else
+		else if (!signatureMatch && hasEntity)
 		{
-			std::erase(system->Entities, wrapper);
+			if (system->Entities.size() == 1)
+			{
+				system->Entities.clear();
+				system->EntityToIndexMap.clear();
+				continue;
+			}
+
+			size_t indexOfRemoved = system->EntityToIndexMap.at(entity);
+			size_t indexOfLast = system->Entities.size() - 1;
+			Entity lastEntity = system->Entities.back().GetEntity();
+
+			system->Entities[indexOfRemoved] = system->Entities.back();
+			system->EntityToIndexMap[lastEntity] = indexOfRemoved;
+
+			system->Entities.pop_back();
+			system->EntityToIndexMap.erase(entity);
 		}
 	}
 }
@@ -144,20 +161,66 @@ inline void SystemManager::BuildExecutionGraph()
 		}
 		m_executionStages.push_back(currentStage);
 	}
+
+	size_t scheduledSystems = 0;
+	for (const auto& stage : m_executionStages)
+		scheduledSystems += stage.size();
+	assert(scheduledSystems == m_systems.size() && "Cycle detected in system dependencies!");
 }
 
 inline void SystemManager::Execute(Scene& scene, float dt)
 {
-	for (auto const& stage : m_executionStages)
+	for (const auto& stage : m_executionStages)
 	{
-		std::vector<std::jthread> worker_threads;
-		worker_threads.reserve(stage.size());
+		m_tasksInProgress = stage.size();
 
 		for (SystemId id : stage)
 		{
-			worker_threads.emplace_back([this, id, &scene, dt]() {
-				m_systems.at(id)->Update(scene, dt);
+			{
+				std::unique_lock<std::mutex> lock(m_queueMutex);
+				m_taskQueue.emplace([this, id, &scene, dt]() {
+					m_systems.at(id)->Update(scene, dt);
+				});
+			}
+		}
+
+		m_workerCondition.notify_all();
+
+		{
+			std::unique_lock<std::mutex> lock(m_queueMutex);
+			m_mainCondition.wait(lock, [this]() {
+				return m_tasksInProgress == 0;
 			});
+		}
+	}
+}
+
+inline void SystemManager::WorkerLoop()
+{
+	while (!m_stopThreads)
+	{
+		std::function<void()> task;
+		{
+			std::unique_lock<std::mutex> lock(m_queueMutex);
+			m_workerCondition.wait(lock, [this]() {
+				return m_stopThreads || !m_taskQueue.empty();
+			});
+
+			if (m_stopThreads && m_taskQueue.empty())
+			{
+				return;
+			}
+
+			task = std::move(m_taskQueue.front());
+			m_taskQueue.pop();
+		}
+
+		task();
+
+		if (--m_tasksInProgress == 0)
+		{
+			std::lock_guard<std::mutex> lock(m_queueMutex);
+			m_mainCondition.notify_one();
 		}
 	}
 }

@@ -100,7 +100,7 @@ public:
 	}
 
 	template <typename _TSystem, typename... _TArgs>
-	SystemManager& RegisterSystem(_TArgs&&... args)
+	SystemManager::SystemConfiguration RegisterSystem(_TArgs&&... args)
 	{
 		return m_systemManager->RegisterSystem<_TSystem>(std::forward<_TArgs>(args)...);
 	}
